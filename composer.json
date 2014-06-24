@@ -1,0 +1,24 @@
+{
+    "name": "clue/redis-react",
+    "description": "Async redis client implementation",
+    "keywords": ["redis", "client", "async", "react"],
+    "homepage": "https://github.com/clue/reactphp-redis",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian Lück",
+            "email": "christian@lueck.tv"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "evenement/evenement": "~1.0",
+        "react/promise": "~1.0",
+        "react/socket-client": "0.3.*",
+        "react/event-loop": "0.3.*",
+        "clue/hexdump": "*"
+    },
+    "autoload": {
+        "psr-4": { "Clue\\React\\Ami\\": "src/" }
+    }
+}
