@@ -3,10 +3,10 @@
 namespace Clue\React\Ami;
 
 use Clue\React\Ami\Client;
-use Clue\React\Ami\Protocol\ActionResponse;
-use Clue\React\Ami\Protocol\ActionRequest;
+use Clue\React\Ami\Protocol\Response;
+use Clue\React\Ami\Protocol\Action;
 use UnexpectedValueException;
-use Clue\React\Ami\Protocol\EventMessage;
+use Clue\React\Ami\Protocol\Event;
 
 class Api
 {
@@ -20,33 +20,33 @@ class Api
     public function login($username, $secret, $events = null)
     {
         $events = $this->boolParam($events);
-        return $this->client->request(new ActionRequest('Login', array('UserName' => $username, 'Secret' => $secret, 'Events' => $events)));
+        return $this->client->request(new Action('Login', array('UserName' => $username, 'Secret' => $secret, 'Events' => $events)));
     }
 
     public function logout()
     {
-        return $this->client->request(new ActionRequest('Logout'));
+        return $this->client->request(new Action('Logout'));
     }
 
     public function agentLogoff($agentId, $soft = false)
     {
         $bool = $soft ? 'true' : 'false';
-        return $this->client->request(new ActionRequest('AgentLogoff', array('Agent' => $agentId, 'Soft' => $bool)));
+        return $this->client->request(new Action('AgentLogoff', array('Agent' => $agentId, 'Soft' => $bool)));
     }
 
     public function ping()
     {
-        return $this->client->request(new ActionRequest('Ping'));
+        return $this->client->request(new Action('Ping'));
     }
 
     public function coreShowChannels()
     {
-        return $this->client->request(new ActionRequest('CoreShowChannels'));
+        return $this->client->request(new Action('CoreShowChannels'));
     }
 
     public function command($command)
     {
-        return $this->client->request(new ActionRequest('Command', array('Command' => $command)));
+        return $this->client->request(new Action('Command', array('Command' => $command)));
     }
 
     public function events($eventMask)
@@ -59,42 +59,42 @@ class Api
             $eventMask = implode(',', $eventMask);
         }
 
-        return $this->client->request(new ActionRequest('Events', array('EventMask' => $eventMask)));
+        return $this->client->request(new Action('Events', array('EventMask' => $eventMask)));
     }
 
     public function sipPeers()
     {
-        return $this->client->request(new ActionRequest('SIPPeers'));
+        return $this->client->request(new Action('SIPPeers'));
     }
 
     public function sipShowPeer($peerName)
     {
-        return $this->client->request(new ActionRequest('SIPshowpeer', array('Peer' => $peerName)));
+        return $this->client->request(new Action('SIPshowpeer', array('Peer' => $peerName)));
     }
 
     public function listCommands()
     {
-        return $this->client->request(new ActionRequest('ListCommands'));
+        return $this->client->request(new Action('ListCommands'));
     }
 
     public function sendText($channel, $message)
     {
-        return $this->client->request(new ActionRequest('Sendtext', array('Channel' => $channel, 'Message' => $message)));
+        return $this->client->request(new Action('Sendtext', array('Channel' => $channel, 'Message' => $message)));
     }
 
     public function hangup($channel, $cause)
     {
-        return $this->client->request(new ActionRequest('Hangup', array('Channel' => $channel, 'Cause' => $cause)));
+        return $this->client->request(new Action('Hangup', array('Channel' => $channel, 'Cause' => $cause)));
     }
 
     public function challenge($authType = 'MD5')
     {
-        return $this->client->request(new ActionRequest('Challenge', array('AuthType' => $authType)));
+        return $this->client->request(new Action('Challenge', array('AuthType' => $authType)));
     }
 
     public function getConfig($filename, $category = null)
     {
-        return $this->client->request(new ActionRequest('GetConfig', array('Filename' => $filename, 'Category' => $category)));
+        return $this->client->request(new Action('GetConfig', array('Filename' => $filename, 'Category' => $category)));
     }
 
     private function boolParam($value)

@@ -2,8 +2,8 @@
 
 namespace Clue\React\Ami;
 
-use Clue\React\Ami\Protocol\EventMessage;
-use Clue\React\Ami\Protocol\ActionRequest;
+use Clue\React\Ami\Protocol\Event;
+use Clue\React\Ami\Protocol\Action;
 use Evenement\EventEmitter;
 use React\Stream\Stream;
 use Clue\React\Ami\Protocol\Parser;
@@ -40,7 +40,7 @@ class Client extends EventEmitter
         $this->stream->resume();
     }
 
-    public function request(ActionRequest $message)
+    public function request(Action $message)
     {
         $deferred = new Deferred();
 
@@ -58,7 +58,7 @@ class Client extends EventEmitter
 
     public function handleMessage(Message $message)
     {
-        if ($message instanceof EventMessage) {
+        if ($message instanceof Event) {
             $this->emit('event', array($message));
             return;
         }

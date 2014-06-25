@@ -3,8 +3,8 @@
 use Clue\React\Ami\Factory;
 use Clue\React\Ami\Client;
 use Clue\React\Ami\Api;
-use Clue\React\Ami\Protocol\ActionResponse;
-use Clue\React\Ami\Protocol\EventMessage;
+use Clue\React\Ami\Protocol\Response;
+use Clue\React\Ami\Protocol\Event;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -24,7 +24,7 @@ $factory->createClient($target)->then(
             echo 'Connection closed' . PHP_EOL;
         });
 
-        $client->on('event', function (EventMessage $event) {
+        $client->on('event', function (Event $event) {
             echo 'Event: ' . $event->getName() . ': ' . $event->toJson() . PHP_EOL;
         });
     },

@@ -8,7 +8,7 @@ class ErrorException extends RuntimeException
 {
     private $response;
 
-    public function __construct(ActionResponse $response)
+    public function __construct(Response $response)
     {
         parent::__construct('Error "' . $response->getPart('Message') . '"');
         $this->response = $response;

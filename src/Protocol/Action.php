@@ -2,7 +2,7 @@
 
 namespace Clue\React\Ami\Protocol;
 
-class ActionRequest extends Message
+class Action extends Message
 {
     private $action;
 

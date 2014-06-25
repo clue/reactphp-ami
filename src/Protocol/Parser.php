@@ -61,14 +61,14 @@ class Parser
         $key = key($parts);
 
         if ($key === 'Event') {
-            return new EventMessage($value, $parts);
+            return new Event($value, $parts);
         }
 
         if ($key === 'Response' && $value === 'Error') {
 
         }
 
-        return new ActionResponse($parts);
+        return new Response($parts);
     }
 
     public function clear()

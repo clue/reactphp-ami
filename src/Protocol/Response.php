@@ -2,7 +2,7 @@
 
 namespace Clue\React\Ami\Protocol;
 
-class ActionResponse extends Message
+class Response extends Message
 {
     public function __construct(array $parts)
     {

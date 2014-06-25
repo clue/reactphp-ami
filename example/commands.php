@@ -3,8 +3,8 @@
 use Clue\React\Ami\Factory;
 use Clue\React\Ami\Client;
 use Clue\React\Ami\Api;
-use Clue\React\Ami\Protocol\ActionResponse;
-use Clue\React\Ami\Protocol\EventMessage;
+use Clue\React\Ami\Protocol\Response;
+use Clue\React\Ami\Protocol\Event;
 use Clue\React\Ami\Protocol\ErrorException;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -20,7 +20,7 @@ $factory->createClient($target)->then(function (Client $client) use ($loop) {
 
     $api->events(false);
 
-    $api->listCommands()->then(function (ActionResponse $response) {
+    $api->listCommands()->then(function (Response $response) {
         echo 'Commands: ' . implode(', ', array_keys($response->getParts())) . PHP_EOL;
     });
 
@@ -33,7 +33,7 @@ $factory->createClient($target)->then(function (Client $client) use ($loop) {
         echo '<' . $line . PHP_EOL;
 
         $api->command($line)->then(
-            function(ActionResponse $response) {
+            function(Response $response) {
                 echo $response->getPart('_') . PHP_EOL;
             },
             function (ErrorException $error) use ($line) {

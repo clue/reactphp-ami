@@ -2,7 +2,7 @@
 
 namespace Clue\React\Ami\Protocol;
 
-class EventMessage extends Message
+class Event extends Message
 {
     private $name;
 
