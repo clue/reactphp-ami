@@ -4,44 +4,8 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0d79a0902a51fad980d8b3e5703b7d18",
+    "hash": "6d44db213c4cd5a29b327b19636c7684",
     "packages": [
-        {
-            "name": "clue/hexdump",
-            "version": "v0.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/clue/php-hexdump.git",
-                "reference": "d2fdb529522f60fd0855cb424afaa77ad9b1493b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/clue/php-hexdump/zipball/d2fdb529522f60fd0855cb424afaa77ad9b1493b",
-                "reference": "d2fdb529522f60fd0855cb424afaa77ad9b1493b",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Clue\\Hexdump": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "View any (binary) string as a hexdump",
-            "homepage": "https://github.com/clue/hexdump",
-            "keywords": [
-                "binary",
-                "hexdump",
-                "network protocol debugging"
-            ],
-            "time": "2013-06-22 21:28:05"
-        },
         {
             "name": "evenement/evenement",
             "version": "v1.0.0",
@@ -391,9 +355,9 @@
     "stability-flags": [
 
     ],
-    "platform": [
-
-    ],
+    "platform": {
+        "php": ">=5.3"
+    },
     "platform-dev": [
 
     ]
