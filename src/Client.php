@@ -15,7 +15,6 @@ use Clue\React\Ami\Protocol\ErrorException;
 class Client extends EventEmitter
 {
     private $stream;
-    private $parser;
 
     private $pending = array();
     private $ending = false;
@@ -26,7 +25,6 @@ class Client extends EventEmitter
             $parser = new Parser();
         }
         $this->stream = $stream;
-        $this->parser = $parser;
 
         $that = $this;
         $this->stream->on('data', function ($chunk) use ($parser, $that) {
@@ -95,9 +93,6 @@ class Client extends EventEmitter
         $stream->close();
 
         $this->emit('close', array($this));
-
-        $this->parser->clear();
-        $this->parser = null;
 
         // reject all remaining/pending requests
         foreach ($this->pending as $deferred) {

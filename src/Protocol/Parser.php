@@ -70,9 +70,4 @@ class Parser
 
         return new Response($parts);
     }
-
-    public function clear()
-    {
-        $this->buffer = '';
-    }
 }
