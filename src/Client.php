@@ -5,7 +5,7 @@ namespace Clue\React\Ami;
 use Clue\React\Ami\Protocol\Event;
 use Clue\React\Ami\Protocol\Action;
 use Evenement\EventEmitter;
-use React\Stream\Stream;
+use React\Stream\StreamInterface;
 use Clue\React\Ami\Protocol\Parser;
 use React\Promise\Deferred;
 use Exception;
@@ -19,7 +19,7 @@ class Client extends EventEmitter
     private $pending = array();
     private $ending = false;
 
-    public function __construct(Stream $stream, Parser $parser = null)
+    public function __construct(StreamInterface $stream, Parser $parser = null)
     {
         if ($parser === null) {
             $parser = new Parser();
