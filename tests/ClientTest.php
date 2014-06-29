@@ -18,4 +18,17 @@ class ClientTest extends TestCase
         $stream->close();
         //$stream->emit('close', array($this));
     }
+
+    public function testParserExceptionForwardsErrorAndClosesClient()
+    {
+        $stream = new ThroughStream();
+        $parser = new Parser();
+
+        $client = new Client($stream, $parser);
+
+        $client->on('error', $this->expectCallableOnce());
+        $client->on('close', $this->expectCallableOnce());
+
+        $stream->emit('data', array("invalid chunk\r\n\r\ninvalid chunk\r\n\r\n"));
+    }
 }

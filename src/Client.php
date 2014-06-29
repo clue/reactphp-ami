@@ -9,6 +9,7 @@ use React\Stream\StreamInterface;
 use Clue\React\Ami\Protocol\Parser;
 use React\Promise\Deferred;
 use Exception;
+use UnexpectedValueException;
 use Clue\React\Ami\Protocol\Message;
 use Clue\React\Ami\Protocol\ErrorException;
 
@@ -28,10 +29,19 @@ class Client extends EventEmitter
 
         $that = $this;
         $this->stream->on('data', function ($chunk) use ($parser, $that) {
-            foreach ($parser->push($chunk) as $message) {
+            try {
+                $messages = $parser->push($chunk);
+            } catch (UnexpectedValueException $e) {
+                $that->emit('error', array($e, $this));
+                return;
+            }
+
+            foreach ($messages as $message) {
                 $that->handleMessage($message);
             }
         });
+
+        $this->on('error', array($that, 'close'));
 
         $this->stream->on('close', array ($that, 'close'));
 
