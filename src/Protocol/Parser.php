@@ -64,10 +64,6 @@ class Parser
             return new Event($value, $parts);
         }
 
-        if ($key === 'Response' && $value === 'Error') {
-
-        }
-
         return new Response($parts);
     }
 }
