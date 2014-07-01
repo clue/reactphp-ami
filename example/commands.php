@@ -4,8 +4,6 @@ use Clue\React\Ami\Factory;
 use Clue\React\Ami\Client;
 use Clue\React\Ami\Api;
 use Clue\React\Ami\Protocol\Response;
-use Clue\React\Ami\Protocol\Event;
-use Clue\React\Ami\Protocol\ErrorException;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -24,8 +22,10 @@ $factory->createClient($target)->then(function (Client $client) use ($loop) {
         echo 'Commands: ' . implode(', ', array_keys($response->getParts())) . PHP_EOL;
     });
 
-    $client->on('close', function() {
+    $client->on('close', function() use ($loop) {
         echo 'Closed' . PHP_EOL;
+
+        $loop->removeReadStream(STDIN);
     });
 
     $loop->addReadStream(STDIN, function () use ($api) {
@@ -33,10 +33,10 @@ $factory->createClient($target)->then(function (Client $client) use ($loop) {
         echo '<' . $line . PHP_EOL;
 
         $api->command($line)->then(
-            function(Response $response) {
+            function (Response $response) {
                 echo $response->getPart('_') . PHP_EOL;
             },
-            function (ErrorException $error) use ($line) {
+            function (Exception $error) use ($line) {
                 echo 'Error executing "' . $line . '": ' . $error->getMessage() . PHP_EOL;
             }
         );
