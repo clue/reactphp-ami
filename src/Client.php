@@ -32,7 +32,7 @@ class Client extends EventEmitter
             try {
                 $messages = $parser->push($chunk);
             } catch (UnexpectedValueException $e) {
-                $that->emit('error', array($e, $this));
+                $that->emit('error', array($e, $that));
                 return;
             }
 
