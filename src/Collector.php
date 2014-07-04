@@ -21,20 +21,20 @@ class Collector
 
     public function coreShowChannels()
     {
-        return $this->collectEvents('CoreShowChannels');
+        return $this->collectEvents('CoreShowChannels', 'CoreShowChannelsComplete');
     }
 
     public function sipPeers()
     {
-        return $this->collectEvents('SIPPeers');
+        return $this->collectEvents('SIPPeers', 'PeerlistComplete');
     }
 
     public function agents()
     {
-        return $this->collectEvents('Agents');
+        return $this->collectEvents('Agents', 'AgentsComplete');
     }
 
-    private function collectEvents($command)
+    private function collectEvents($command, $expectedEndEvent)
     {
         $req = new Action($command);
         $ret = $this->client->request($req);
@@ -44,11 +44,11 @@ class Collector
 
         // collect all intermediary channel events with this action ID
         $collected = array();
-        $collector = function (Event $event) use ($id, &$collected, $deferred) {
+        $collector = function (Event $event) use ($id, &$collected, $deferred, $expectedEndEvent) {
             if ($event->getActionId() === $id) {
                 $collected []= $event;
 
-                if ($event->getPart('EventList') === 'Complete') {
+                if ($event->getName() === $expectedEndEvent) {
                     $deferred->resolve($collected);
                 }
             }
