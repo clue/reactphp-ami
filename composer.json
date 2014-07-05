@@ -1,8 +1,8 @@
 {
-    "name": "clue/redis-react",
-    "description": "Async redis client implementation",
-    "keywords": ["redis", "client", "async", "react"],
-    "homepage": "https://github.com/clue/reactphp-redis",
+    "name": "clue/asterisk-ami-react",
+    "description": "Async, event-driven access to the Asterisk Manager Interface (AMI)",
+    "keywords": ["Asterisk Manager Interface", "AMI", "async", "react"],
+    "homepage": "https://github.com/clue/reactphp-asterisk-ami",
     "license": "MIT",
     "authors": [
         {

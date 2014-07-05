@@ -5,7 +5,7 @@ namespace Clue\React\Ami;
 use Clue\React\Ami\Protocol\Event;
 use Clue\React\Ami\Protocol\Action;
 use Evenement\EventEmitter;
-use React\Stream\StreamInterface;
+use React\Stream\Stream;
 use Clue\React\Ami\Protocol\Parser;
 use React\Promise\Deferred;
 use Exception;
@@ -20,7 +20,9 @@ class Client extends EventEmitter
     private $pending = array();
     private $ending = false;
 
-    public function __construct(StreamInterface $stream, Parser $parser = null)
+    private $actionId = 0;
+
+    public function __construct(Stream $stream, Parser $parser = null)
     {
         if ($parser === null) {
             $parser = new Parser();
@@ -123,5 +125,12 @@ class Client extends EventEmitter
     public function isBusy()
     {
         return !!$this->pending;
+    }
+
+    public function createAction($name, array $args = array())
+    {
+        $args = array('ActionID' => (string)++$this->actionId) + $args;
+
+        return new Action($name, $args);
     }
 }

@@ -20,33 +20,33 @@ class Api
     public function login($username, $secret, $events = null)
     {
         $events = $this->boolParam($events);
-        return $this->client->request(new Action('Login', array('UserName' => $username, 'Secret' => $secret, 'Events' => $events)));
+        return $this->request('Login', array('UserName' => $username, 'Secret' => $secret, 'Events' => $events));
     }
 
     public function logout()
     {
-        return $this->client->request(new Action('Logout'));
+        return $this->request('Logout');
     }
 
     public function agentLogoff($agentId, $soft = false)
     {
         $bool = $soft ? 'true' : 'false';
-        return $this->client->request(new Action('AgentLogoff', array('Agent' => $agentId, 'Soft' => $bool)));
+        return $this->request('AgentLogoff', array('Agent' => $agentId, 'Soft' => $bool));
     }
 
     public function ping()
     {
-        return $this->client->request(new Action('Ping'));
+        return $this->request('Ping');
     }
 
     public function coreShowChannels()
     {
-        return $this->client->request(new Action('CoreShowChannels'));
+        return $this->request('CoreShowChannels');
     }
 
     public function command($command)
     {
-        return $this->client->request(new Action('Command', array('Command' => $command)));
+        return $this->request('Command', array('Command' => $command));
     }
 
     public function events($eventMask)
@@ -59,42 +59,42 @@ class Api
             $eventMask = implode(',', $eventMask);
         }
 
-        return $this->client->request(new Action('Events', array('EventMask' => $eventMask)));
+        return $this->request('Events', array('EventMask' => $eventMask));
     }
 
     public function sipPeers()
     {
-        return $this->client->request(new Action('SIPPeers'));
+        return $this->request('SIPPeers');
     }
 
     public function sipShowPeer($peerName)
     {
-        return $this->client->request(new Action('SIPshowpeer', array('Peer' => $peerName)));
+        return $this->request('SIPshowpeer', array('Peer' => $peerName));
     }
 
     public function listCommands()
     {
-        return $this->client->request(new Action('ListCommands'));
+        return $this->request('ListCommands');
     }
 
     public function sendText($channel, $message)
     {
-        return $this->client->request(new Action('Sendtext', array('Channel' => $channel, 'Message' => $message)));
+        return $this->request('Sendtext', array('Channel' => $channel, 'Message' => $message));
     }
 
     public function hangup($channel, $cause)
     {
-        return $this->client->request(new Action('Hangup', array('Channel' => $channel, 'Cause' => $cause)));
+        return $this->request('Hangup', array('Channel' => $channel, 'Cause' => $cause));
     }
 
     public function challenge($authType = 'MD5')
     {
-        return $this->client->request(new Action('Challenge', array('AuthType' => $authType)));
+        return $this->request('Challenge', array('AuthType' => $authType));
     }
 
     public function getConfig($filename, $category = null)
     {
-        return $this->client->request(new Action('GetConfig', array('Filename' => $filename, 'Category' => $category)));
+        return $this->request('GetConfig', array('Filename' => $filename, 'Category' => $category));
     }
 
     private function boolParam($value)
@@ -106,5 +106,10 @@ class Api
             return 'off';
         }
         return null;
+    }
+
+    private function request($name, array $args = array())
+    {
+        return $this->client->request($this->client->createAction($name, $args));
     }
 }

@@ -3,13 +3,13 @@
 use React\Stream\Stream;
 use Clue\React\Ami\Protocol\Parser;
 use Clue\React\Ami\Client;
-use React\Stream\ThroughStream;
+use React\EventLoop\Factory;
 
 class ClientTest extends TestCase
 {
     public function testClosingStreamClosesClient()
     {
-        $stream = new ThroughStream();
+        $stream = $this->createStreamMock();
 
         $client = new Client($stream);
 
@@ -21,7 +21,7 @@ class ClientTest extends TestCase
 
     public function testParserExceptionForwardsErrorAndClosesClient()
     {
-        $stream = new ThroughStream();
+        $stream = $this->createStreamMock();
         $parser = new Parser();
 
         $client = new Client($stream, $parser);
@@ -30,5 +30,10 @@ class ClientTest extends TestCase
         $client->on('close', $this->expectCallableOnce());
 
         $stream->emit('data', array("invalid chunk\r\n\r\ninvalid chunk\r\n\r\n"));
+    }
+
+    private function createStreamMock()
+    {
+        return new Stream(fopen('php://memory', 'r+'), $this->getMock('React\EventLoop\LoopInterface'));
     }
 }
