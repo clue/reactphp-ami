@@ -4,8 +4,6 @@ namespace Clue\React\Ami;
 
 use Clue\React\Ami\Client;
 use Clue\React\Ami\Protocol\Response;
-use Clue\React\Ami\Protocol\Action;
-use UnexpectedValueException;
 use Clue\React\Ami\Protocol\Event;
 use Clue\React\Ami\Protocol\Collection;
 use React\Promise\Deferred;
@@ -36,7 +34,7 @@ class Collector
 
     private function collectEvents($command, $expectedEndEvent)
     {
-        $req = new Action($command);
+        $req = $this->client->createAction($command);
         $ret = $this->client->request($req);
         $id = $req->getActionId();
 
