@@ -10,8 +10,6 @@ class Action extends Message
     {
         $this->action = $action;
         $this->parts = $parts;
-
-        $this->parts['ActionID'] = (string)mt_rand();
     }
 
     public function getMessageSerialized()
