@@ -110,6 +110,6 @@ class Api
 
     private function request($name, array $args = array())
     {
-        return $this->client->request(new Action($name, $args));
+        return $this->client->request($this->client->createAction($name, $args));
     }
 }

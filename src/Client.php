@@ -20,6 +20,8 @@ class Client extends EventEmitter
     private $pending = array();
     private $ending = false;
 
+    private $actionId = 0;
+
     public function __construct(Stream $stream, Parser $parser = null)
     {
         if ($parser === null) {
@@ -123,5 +125,12 @@ class Client extends EventEmitter
     public function isBusy()
     {
         return !!$this->pending;
+    }
+
+    public function createAction($name, array $args = array())
+    {
+        $args = array('ActionID' => (string)++$this->actionId) + $args;
+
+        return new Action($name, $args);
     }
 }
