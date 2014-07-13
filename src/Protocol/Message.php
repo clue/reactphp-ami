@@ -4,18 +4,18 @@ namespace Clue\React\Ami\Protocol;
 
 abstract class Message
 {
-    protected $parts = array();
+    protected $fields = array();
 
     public function getActionId()
     {
-        return $this->getPart('ActionId');
+        return $this->getField('ActionId');
     }
 
-    public function getPart($key)
+    public function getField($key)
     {
         $key = strtolower($key);
 
-        foreach ($this->parts as $part => $value) {
+        foreach ($this->fields as $part => $value) {
             if (strtolower($part) === $key) {
                 return $value;
             }
@@ -26,11 +26,11 @@ abstract class Message
 
     public function toJson()
     {
-        return json_encode($this->getParts());
+        return json_encode($this->getFields());
     }
 
-    public function getParts()
+    public function getFields()
     {
-        return $this->parts;
+        return $this->fields;
     }
 }

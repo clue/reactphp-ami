@@ -4,8 +4,8 @@ namespace Clue\React\Ami\Protocol;
 
 class Response extends Message
 {
-    public function __construct(array $parts)
+    public function __construct(array $fields)
     {
-        $this->parts = $parts;
+        $this->fields = $fields;
     }
 }

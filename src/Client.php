@@ -79,7 +79,7 @@ class Client extends EventEmitter
             return;
         }
 
-        if ($message->getPart('Response') === 'Error') {
+        if ($message->getField('Response') === 'Error') {
             $this->pending[$id]->reject(new ErrorException($message));
         } else {
             $this->pending[$id]->resolve($message);

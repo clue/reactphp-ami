@@ -19,7 +19,7 @@ $factory->createClient($target)->then(function (Client $client) use ($loop) {
     $api->events(false);
 
     $api->listCommands()->then(function (Response $response) {
-        echo 'Commands: ' . implode(', ', array_keys($response->getParts())) . PHP_EOL;
+        echo 'Commands: ' . implode(', ', array_keys($response->getFields())) . PHP_EOL;
     });
 
     $client->on('close', function() use ($loop) {
@@ -34,7 +34,7 @@ $factory->createClient($target)->then(function (Client $client) use ($loop) {
 
         $api->command($line)->then(
             function (Response $response) {
-                echo $response->getPart('_') . PHP_EOL;
+                echo $response->getField('_') . PHP_EOL;
             },
             function (Exception $error) use ($line) {
                 echo 'Error executing "' . $line . '": ' . $error->getMessage() . PHP_EOL;

@@ -4,13 +4,13 @@ namespace Clue\React\Ami\Protocol;
 
 class Event extends Message
 {
-    public function __construct(array $parts)
+    public function __construct(array $fields)
     {
-        $this->parts = $parts;
+        $this->fields = $fields;
     }
 
     public function getName()
     {
-        return $this->getPart('Event');
+        return $this->getField('Event');
     }
 }

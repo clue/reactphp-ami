@@ -10,7 +10,7 @@ class ErrorException extends RuntimeException
 
     public function __construct(Response $response)
     {
-        parent::__construct('Error "' . $response->getPart('Message') . '"');
+        parent::__construct('Error "' . $response->getField('Message') . '"');
         $this->response = $response;
     }
 
