@@ -57,11 +57,11 @@ class Parser
             $parts[$key] = $value;
         }
 
-        $value = reset($parts);
+        reset($parts);
         $key = key($parts);
 
         if ($key === 'Event') {
-            return new Event($value, $parts);
+            return new Event($parts);
         }
 
         return new Response($parts);

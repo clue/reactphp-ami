@@ -17,7 +17,7 @@ class CollectorTest extends TestCase
         $client->expects($this->once())
                  ->method('createAction')
                  ->with($this->equalTo('SIPPeers'), $this->equalTo(array()))
-                 ->will($this->returnValue(new Action('SIPPeers', array('ActionID' => '123'))));
+                 ->will($this->returnValue(new Action(array('Action' => 'SIPPeers', 'ActionID' => '123'))));
 
         $collector = new Collector($client);
 
@@ -35,12 +35,12 @@ class CollectorTest extends TestCase
         $response = new Response(array('Response' => 'Success', 'ActionID' => '123'));
 
         $client->handleMessage($response);
-        $client->handleMessage(new Event('PeerEntry', array('ActionID' => '123')));
-        $client->handleMessage(new Event('PeerEntry', array('ActionID' => '123')));
+        $client->handleMessage(new Event(array('Event' => 'PeerEntry', 'ActionID' => '123')));
+        $client->handleMessage(new Event(array('Event' => 'PeerEntry', 'ActionID' => '123')));
 
         $this->assertNull($resolved);
 
-        $client->handleMessage(new Event('PeerlistComplete', array('EventList' => 'complete', 'ListItems' => '2', 'ActionID' => '123')));
+        $client->handleMessage(new Event(array('Event' => 'PeerlistComplete', 'EventList' => 'complete', 'ListItems' => '2', 'ActionID' => '123')));
 
         $this->assertNotNull($resolved);
 

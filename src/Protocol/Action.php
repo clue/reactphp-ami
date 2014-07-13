@@ -4,17 +4,14 @@ namespace Clue\React\Ami\Protocol;
 
 class Action extends Message
 {
-    private $action;
-
-    public function __construct($action, array $parts = array())
+    public function __construct(array $parts = array())
     {
-        $this->action = $action;
         $this->parts = $parts;
     }
 
     public function getMessageSerialized()
     {
-        $message = 'Action: ' . $this->action . "\r\n";
+        $message = '';
         foreach ($this->parts as $key => $values) {
             if (!is_array($values)) {
                 $values = array($values);
