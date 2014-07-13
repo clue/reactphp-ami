@@ -46,11 +46,11 @@ class Parser
                 $key = '_';
                 $value = $line;
             } else {
-                $pos = strpos($line, ':');
+                $pos = strpos($line, ': ');
                 if ($pos === false) {
                     throw new \UnexpectedValueException('Parse error, no colon in line "' . $line . '" found');
                 }
-                $value = ltrim(substr($line, $pos + 1));
+                $value = substr($line, $pos + 2);
                 $key = substr($line, 0, $pos);
             }
 

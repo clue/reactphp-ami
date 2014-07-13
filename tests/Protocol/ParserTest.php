@@ -19,6 +19,21 @@ class ParserTest extends TestCase
         $this->assertEquals('Success', $first->getPart('Response'));
     }
 
+    public function testParseResponseSpace()
+    {
+        $parser = new Parser();
+        $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
+
+        $ret = $parser->push("Response: Success\r\nMessage:  spaces  \r\n\r\n");
+        $this->assertCount(1, $ret);
+
+        $first = reset($ret);
+        /* @var $first Clue\React\Ami\Protocol\Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
+        $this->assertEquals(' spaces  ', $first->getPart('Message'));
+    }
+
     public function testParsingMultipleEvents()
     {
         $parser = new Parser();
@@ -59,5 +74,16 @@ class ParserTest extends TestCase
         $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
 
         $parser->push("invalid response\r\n\r\n");
+    }
+
+    /**
+     * @expectedException UnexpectedValueException
+     */
+    public function testParsingInvalidResponseNoSpaceAfterColonFails()
+    {
+        $parser = new Parser();
+        $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
+
+        $parser->push("Response:NoSpace\r\n\r\n");
     }
 }
