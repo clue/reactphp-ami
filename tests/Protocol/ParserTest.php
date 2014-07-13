@@ -16,7 +16,7 @@ class ParserTest extends TestCase
         /* @var $first Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
-        $this->assertEquals('Success', $first->getPart('Response'));
+        $this->assertEquals('Success', $first->getField('Response'));
     }
 
     public function testParseResponseSpace()
@@ -31,7 +31,7 @@ class ParserTest extends TestCase
         /* @var $first Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
-        $this->assertEquals(' spaces  ', $first->getPart('Message'));
+        $this->assertEquals(' spaces  ', $first->getField('Message'));
     }
 
     public function testParsingMultipleEvents()
@@ -61,8 +61,8 @@ class ParserTest extends TestCase
         /* @var $first Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
-        $this->assertEquals('Follows', $first->getPart('Response'));
-        $this->assertEquals("Testing: yes\nAnother Line\n--END COMMAND--", $first->getPart('_'));
+        $this->assertEquals('Follows', $first->getField('Response'));
+        $this->assertEquals("Testing: yes\nAnother Line\n--END COMMAND--", $first->getField('_'));
     }
 
     /**

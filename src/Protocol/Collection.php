@@ -12,7 +12,7 @@ class Collection extends Message
 
     public function __construct(Response $response, array $entryEvents, Event $completeEvent)
     {
-        $this->parts = $response->getParts();
+        $this->fields = $response->getFields();
         $this->response = $response;
         $this->entryEvents = $entryEvents;
         $this->completeEvent = $completeEvent;

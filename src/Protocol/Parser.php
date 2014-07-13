@@ -40,7 +40,7 @@ class Parser
 
     private function parseMessage($message)
     {
-        $parts = array();
+        $fields = array();
         foreach (explode(self::EOL, $message) as $line) {
             if (substr($line, -self::LCOMMAND_END) === self::COMMAND_END) {
                 $key = '_';
@@ -54,16 +54,16 @@ class Parser
                 $key = substr($line, 0, $pos);
             }
 
-            $parts[$key] = $value;
+            $fields[$key] = $value;
         }
 
-        reset($parts);
-        $key = key($parts);
+        reset($fields);
+        $key = key($fields);
 
         if ($key === 'Event') {
-            return new Event($parts);
+            return new Event($fields);
         }
 
-        return new Response($parts);
+        return new Response($fields);
     }
 }
