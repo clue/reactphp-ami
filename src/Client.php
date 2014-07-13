@@ -129,8 +129,8 @@ class Client extends EventEmitter
 
     public function createAction($name, array $args = array())
     {
-        $args = array('ActionID' => (string)++$this->actionId) + $args;
+        $args = array('Action' => $name, 'ActionID' => (string)++$this->actionId) + $args;
 
-        return new Action($name, $args);
+        return new Action($args);
     }
 }
