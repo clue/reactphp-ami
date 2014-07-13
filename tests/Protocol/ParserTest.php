@@ -50,6 +50,38 @@ class ParserTest extends TestCase
         $this->assertEquals("Testing: yes\nAnother Line\n--END COMMAND--", $first->getPart('_'));
     }
 
+    public function testParsingCommandResponseEmpty()
+    {
+        $parser = new Parser();
+        $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
+
+        $ret = $parser->push("Response: Follows\r\n--END COMMAND--\r\n\r\n");
+        $this->assertCount(1, $ret);
+
+        $first = reset($ret);
+        /* @var $first Clue\React\Ami\Protocol\Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
+        $this->assertEquals('Follows', $first->getPart('Response'));
+        $this->assertEquals("--END COMMAND--", $first->getPart('_'));
+    }
+
+    public function testParsingResponseIsNotCommandResponse()
+    {
+        $parser = new Parser();
+        $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
+
+        $ret = $parser->push("Response: Success\r\nMessage: Some message--END COMMAND--\r\n\r\n");
+        $this->assertCount(1, $ret);
+
+        $first = reset($ret);
+        /* @var $first Clue\React\Ami\Protocol\Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
+        $this->assertEquals('Success', $first->getPart('Response'));
+        $this->assertEquals('Some message--END COMMAND--', $first->getPart('Message'));
+    }
+
     /**
      * @expectedException UnexpectedValueException
      */
