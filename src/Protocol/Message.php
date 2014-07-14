@@ -8,10 +8,10 @@ abstract class Message
 
     public function getActionId()
     {
-        return $this->getField('ActionId');
+        return $this->getFieldValue('ActionId');
     }
 
-    public function getField($key)
+    public function getFieldValue($key)
     {
         $key = strtolower($key);
 
