@@ -6,6 +6,22 @@ class Action extends Message
 {
     public function __construct(array $fields = array())
     {
+        foreach ($fields as $key => &$value) {
+            if (is_array($value)) {
+                foreach ($value as $k => &$v) {
+                    if ($v === null) {
+                        unset($value[$k]);
+                    } elseif (!is_int($k)) {
+                        $v = $k . '=' . $v;
+                    }
+                }
+                $value = array_values($value);
+            }
+
+            if ($value === null || $value === array()) {
+                unset($fields[$key]);
+            }
+        }
         $this->fields = $fields;
     }
 
@@ -17,9 +33,6 @@ class Action extends Message
                 $values = array($values);
             }
             foreach ($values as $i => $value) {
-                if (!is_int($i)) {
-                    $value = $i . '=' . $value;
-                }
                 $message .= $key . ': ' . $value . "\r\n";
             }
         }
