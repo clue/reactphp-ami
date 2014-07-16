@@ -34,6 +34,32 @@ abstract class Message
         return null;
     }
 
+    /**
+     * Returns a list of all values for the field with the given $key
+     *
+     * @param string $key
+     * @return array
+     */
+    public function getFieldValues($key)
+    {
+        $values = array();
+        $key = strtolower($key);
+
+        foreach ($this->fields as $part => $value) {
+            if (strtolower($part) === $key) {
+                if (is_array($value)) {
+                    foreach ($value as $v) {
+                        $values []= $v;
+                    }
+                } else {
+                    $values []= $value;
+                }
+            }
+        }
+
+        return $values;
+    }
+
     public function toJson()
     {
         return json_encode($this->getFields());

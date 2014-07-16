@@ -28,6 +28,12 @@ class ActionTest extends TestCase
         $action = new Action(array('Action' => 'name'));
 
         $this->assertEquals("Action: name\r\n\r\n", $action->getMessageSerialized());
+
+        $this->assertEquals('name', $action->getFieldValue('Action'));
+        $this->assertEquals(array('name'), $action->getFieldValues('Action'));
+
+        $this->assertEquals(null, $action->getFieldValue('unknown'));
+        $this->assertEquals(array(), $action->getFieldValues('unknown'));
     }
 
     public function testMultipleFieldsSingleValue()
@@ -44,6 +50,7 @@ class ActionTest extends TestCase
         $this->assertEquals("\r\n", $action->getMessageSerialized());
 
         $this->assertNull($action->getFieldValue('Key'));
+        $this->assertEquals(array(), $action->getFieldValues('Key'));
     }
 
     public function testOneFieldNoValues()
@@ -53,6 +60,7 @@ class ActionTest extends TestCase
         $this->assertEquals("\r\n", $action->getMessageSerialized());
 
         $this->assertNull($action->getFieldValue('Key'));
+        $this->assertEquals(array(), $action->getFieldValues('Key'));
     }
 
     public function testOneFieldMultipleValues()
@@ -60,6 +68,9 @@ class ActionTest extends TestCase
         $action = new Action(array('Key' => array('Value1', 'Value2')));
 
         $this->assertEquals("Key: Value1\r\nKey: Value2\r\n\r\n", $action->getMessageSerialized());
+
+        $this->assertEquals('Value1', $action->getFieldValue('Key'));
+        $this->assertEquals(array('Value1', 'Value2'), $action->getFieldValues('Key'));
     }
 
     public function testOneFieldMultipleValuesIgnoreNulls()
@@ -69,6 +80,7 @@ class ActionTest extends TestCase
         $this->assertEquals("Key: value\r\n\r\n", $action->getMessageSerialized());
 
         $this->assertEquals('value', $action->getFieldValue('Key'));
+        $this->assertEquals(array('value'), $action->getFieldValues('Key'));
     }
 
     public function testOneFieldMultipleKeyValues()
@@ -78,5 +90,6 @@ class ActionTest extends TestCase
         $this->assertEquals("Variables: first=on\r\nVariables: second=off\r\n\r\n", $action->getMessageSerialized());
 
         $this->assertEquals('first=on', $action->getFieldValue('Variables'));
+        $this->assertEquals(array('first=on', 'second=off'), $action->getFieldValues('Variables'));
     }
 }
