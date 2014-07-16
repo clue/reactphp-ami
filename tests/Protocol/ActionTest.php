@@ -91,5 +91,8 @@ class ActionTest extends TestCase
 
         $this->assertEquals('first=on', $action->getFieldValue('Variables'));
         $this->assertEquals(array('first=on', 'second=off'), $action->getFieldValues('Variables'));
+
+        $this->assertEquals(array('first' => 'on', 'second' => 'off'), $action->getFieldVariables('Variables'));
+        $this->assertEquals(array(), $action->getFieldVariables('unknown'));
     }
 }

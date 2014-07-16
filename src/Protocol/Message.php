@@ -60,6 +60,25 @@ abstract class Message
         return $values;
     }
 
+    /**
+     * Returns a hashmap of all variable assignments in the given $key
+     *
+     * @param string $key
+     * @return array
+     * @uses self::getFieldValues()
+     */
+    public function getFieldVariables($key)
+    {
+        $variables = array();
+
+        foreach ($this->getFieldValues($key) as $value) {
+            $temp = explode('=', $value, 2);
+            $variables[$temp[0]] = $temp[1];
+        }
+
+        return $variables;
+    }
+
     public function toJson()
     {
         return json_encode($this->getFields());
