@@ -18,31 +18,31 @@ class ActionTest extends TestCase
         $this->assertEquals('123', $action->getActionId());
     }
 
-    public function testSerializeSimple()
+    public function testOneFieldValue()
     {
         $action = new Action(array('Action' => 'name'));
 
         $this->assertEquals("Action: name\r\n\r\n", $action->getMessageSerialized());
     }
 
-    public function testSerializeKeySingle()
+    public function testMultipleFieldsSingleValue()
     {
         $action = new Action(array('Action' => 'name', 'Key' => 'Value'));
 
         $this->assertEquals("Action: name\r\nKey: Value\r\n\r\n", $action->getMessageSerialized());
     }
 
-    public function testSerializeKeyMultipleValues()
+    public function testOneFieldMultipleValues()
     {
-        $action = new Action(array('Action' => 'name', 'Key' => array('Value1', 'Value2')));
+        $action = new Action(array('Key' => array('Value1', 'Value2')));
 
-        $this->assertEquals("Action: name\r\nKey: Value1\r\nKey: Value2\r\n\r\n", $action->getMessageSerialized());
+        $this->assertEquals("Key: Value1\r\nKey: Value2\r\n\r\n", $action->getMessageSerialized());
     }
 
-    public function testSerializeKeyMultipleKeyValues()
+    public function testOneFieldMultipleKeyValues()
     {
-        $action = new Action(array('Action' => 'name', 'Variables' => array('first' => 'on', 'second' => 'off')));
+        $action = new Action(array('Variables' => array('first' => 'on', 'second' => 'off')));
 
-        $this->assertEquals("Action: name\r\nVariables: first=on\r\nVariables: second=off\r\n\r\n", $action->getMessageSerialized());
+        $this->assertEquals("Variables: first=on\r\nVariables: second=off\r\n\r\n", $action->getMessageSerialized());
     }
 }
