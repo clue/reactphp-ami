@@ -54,7 +54,14 @@ class Parser
                 $key = substr($line, 0, $pos);
             }
 
-            $fields[$key] = $value;
+            if (isset($fields[$key])) {
+                if (!is_array($fields[$key])) {
+                    $fields[$key] = array($fields[$key]);
+                }
+                $fields[$key][] = $value;
+            } else {
+                $fields[$key] = $value;
+            }
         }
 
         reset($fields);

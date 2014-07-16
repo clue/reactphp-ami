@@ -49,6 +49,22 @@ class ParserTest extends TestCase
         $this->assertEquals('TestA', $first->getName());
     }
 
+    public function testParseResponseMultipleValues()
+    {
+        $parser = new Parser();
+        $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
+
+        $ret = $parser->push("Response: Success\r\nMessage: one\r\nMessage: two\r\n\r\n");
+        $this->assertCount(1, $ret);
+
+        $first = reset($ret);
+        /* @var $first Clue\React\Ami\Protocol\Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
+        $this->assertEquals('one', $first->getFieldValue('Message'));
+        $this->assertEquals(array('one', 'two'), $first->getFieldValues('Message'));
+    }
+
     public function testParsingCommandResponse()
     {
         $parser = new Parser();
