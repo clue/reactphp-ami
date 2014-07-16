@@ -25,7 +25,7 @@ $factory->createClient($target)->then(
         });
 
         $client->on('event', function (Event $event) {
-            echo 'Event: ' . $event->getName() . ': ' . $event->toJson() . PHP_EOL;
+            echo 'Event: ' . $event->getName() . ': ' . json_encode($event->getFields()) . PHP_EOL;
         });
     },
     function (Exception $error) {

@@ -24,11 +24,6 @@ abstract class Message
         return null;
     }
 
-    public function toJson()
-    {
-        return json_encode($this->getFields());
-    }
-
     public function getFields()
     {
         return $this->fields;
