@@ -11,8 +11,8 @@ class Parser
     const EOL = "\r\n";
     const LEOL = 2;
 
-    const COMMAND_END = "\n--END COMMAND--";
-    const LCOMMAND_END = 16;
+    const COMMAND_END = "--END COMMAND--";
+    const LCOMMAND_END = 15;
 
     private $buffer = '';
     private $gotInitial = false;
@@ -40,9 +40,13 @@ class Parser
 
     private function parseMessage($message)
     {
+        $lines = explode(self::EOL, $message);
+        $last  = count($lines) - 1;
         $fields = array();
-        foreach (explode(self::EOL, $message) as $line) {
-            if (substr($line, -self::LCOMMAND_END) === self::COMMAND_END) {
+
+        foreach ($lines as $i => $line) {
+            $pos = strlen($line) - self::LCOMMAND_END - 1;
+            if ($i === $last && substr($line, -self::LCOMMAND_END) === self::COMMAND_END && ($pos < 0 || $line[$pos] === "\n")) {
                 $key = '_';
                 $value = $line;
             } else {
