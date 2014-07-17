@@ -2,7 +2,28 @@
 
 Simple async, event-driven access to the Asterisk Manager Interface (AMI)
 
-> Note: This project is in eary alpha stage! Feel free to report any issues you encounter.
+The [Asterisk PBX](http://asterisk.org/) is a popular open source telephony solution
+that offers a wide range of telephony features.
+The [Asterisk Manager Interface (AMI)](https://wiki.asterisk.org/wiki/display/AST/The+Asterisk+Manager+TCP+IP+API)
+allows you to control and monitor the PBX.
+Among others, it can be used to originate a new call, execute Asterisk commands or
+monitor the status of subscribers, channels or queues.
+
+* **Async execution of Actions** -
+  Send any number of actions (commands) to the asterisk in parallel and
+  process their responses as soon as results come in.
+  The Promise-based design provides a *sane* interface to working with out of bound responses.
+* **Event-driven core** -
+  Register your event handler callbacks to react to incoming events, such as an incoming call or
+  a change in a subscriber state.
+* **Lightweight, SOLID design** -
+  Provides a thin abstraction that is [*just good enough*](http://en.wikipedia.org/wiki/Principle_of_good_enough)
+  and does not get in your way.
+  Future or custom actions and events require no changes to be supported.
+* **Good test coverage** -
+  Comes with an automated tests suite and is regularly tested against versions as old as Asterisk 1.8+
+
+> Note: This project is in beta stage! Feel free to report any issues you encounter.
 
 ## Quickstart example
 
@@ -38,8 +59,6 @@ The recommended way to install this library is [through composer](http://getcomp
     }
 }
 ```
-
-> Note: This project is currently not listed on packagist.
 
 ## License
 
