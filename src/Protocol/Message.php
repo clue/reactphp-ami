@@ -79,11 +79,6 @@ abstract class Message
         return $variables;
     }
 
-    public function toJson()
-    {
-        return json_encode($this->getFields());
-    }
-
     public function getFields()
     {
         return $this->fields;
