@@ -11,6 +11,6 @@ class Event extends Message
 
     public function getName()
     {
-        return $this->getField('Event');
+        return $this->getFieldValue('Event');
     }
 }

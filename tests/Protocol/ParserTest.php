@@ -16,7 +16,7 @@ class ParserTest extends TestCase
         /* @var $first Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
-        $this->assertEquals('Success', $first->getField('Response'));
+        $this->assertEquals('Success', $first->getFieldValue('Response'));
     }
 
     public function testParseResponseSpace()
@@ -31,7 +31,7 @@ class ParserTest extends TestCase
         /* @var $first Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
-        $this->assertEquals(' spaces  ', $first->getField('Message'));
+        $this->assertEquals(' spaces  ', $first->getFieldValue('Message'));
     }
 
     public function testParsingMultipleEvents()
@@ -49,6 +49,22 @@ class ParserTest extends TestCase
         $this->assertEquals('TestA', $first->getName());
     }
 
+    public function testParseResponseMultipleValues()
+    {
+        $parser = new Parser();
+        $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
+
+        $ret = $parser->push("Response: Success\r\nMessage: one\r\nMessage: two\r\n\r\n");
+        $this->assertCount(1, $ret);
+
+        $first = reset($ret);
+        /* @var $first Clue\React\Ami\Protocol\Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
+        $this->assertEquals('one', $first->getFieldValue('Message'));
+        $this->assertEquals(array('one', 'two'), $first->getFieldValues('Message'));
+    }
+
     public function testParsingCommandResponse()
     {
         $parser = new Parser();
@@ -61,8 +77,8 @@ class ParserTest extends TestCase
         /* @var $first Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
-        $this->assertEquals('Follows', $first->getField('Response'));
-        $this->assertEquals("Testing: yes\nAnother Line\n--END COMMAND--", $first->getField('_'));
+        $this->assertEquals('Follows', $first->getFieldValue('Response'));
+        $this->assertEquals("Testing: yes\nAnother Line\n--END COMMAND--", $first->getFieldValue('_'));
     }
 
     /**
