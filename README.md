@@ -198,7 +198,7 @@ The recommended way to install this library is [through composer](http://getcomp
 ```JSON
 {
     "require": {
-        "clue/asterisk-ami-react": "dev-master"
+        "clue/asterisk-ami-react": "~0.1.0"
     }
 }
 ```
