@@ -1,4 +1,4 @@
-# clue/asterisk-ami-react [![Build Status](https://travis-ci.org/clue/reactphp-asterisk-ami.png?branch=master)](https://travis-ci.org/clue/reactphp-asterisk-ami)
+# clue/ami-react [![Build Status](https://travis-ci.org/clue/php-ami-react.svg?branch=master)](https://travis-ci.org/clue/php-ami-react)
 
 Simple async, event-driven access to the Asterisk Manager Interface (AMI)
 
@@ -198,7 +198,7 @@ The recommended way to install this library is [through composer](http://getcomp
 ```JSON
 {
     "require": {
-        "clue/asterisk-ami-react": "~0.1.0"
+        "clue/ami-react": "~0.2.0"
     }
 }
 ```
