@@ -1,8 +1,8 @@
 {
-    "name": "clue/asterisk-ami-react",
+    "name": "clue/ami-react",
     "description": "Async, event-driven access to the Asterisk Manager Interface (AMI)",
     "keywords": ["Asterisk Manager Interface", "AMI", "async", "react"],
-    "homepage": "https://github.com/clue/reactphp-asterisk-ami",
+    "homepage": "https://github.com/clue/php-ami-react",
     "license": "MIT",
     "authors": [
         {
