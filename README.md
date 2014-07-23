@@ -46,7 +46,7 @@ $factory->createClient('user:secret@localhost')->then(function (Client $client) 
 $loop->run();
 ```
 
-See also the [examples](example).
+See also the [examples](examples).
 
 ## Usage
 
