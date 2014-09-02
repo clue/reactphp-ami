@@ -3,9 +3,13 @@ php:
   - 5.3
   - 5.6
   - hhvm
+env:
+  - LOGIN='username:password@localhost'
 install:
+  - bash -c '[ "$(id -un)" == "root" ] && apt-get update && apt-get install -y sudo || true'
   - sudo apt-get install -y asterisk
-  - export LOGIN='user:pass@localhost'
+  - sudo cp tests/username.conf /etc/asterisk/manager.d/username.conf
+  - sudo /etc/init.d/asterisk restart
   - composer install --prefer-source --no-interaction
 script:
   - phpunit --coverage-text
