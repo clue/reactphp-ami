@@ -23,9 +23,9 @@ class Api
         return $this->request('Login', array('UserName' => $username, 'Secret' => $secret, 'Events' => $events));
     }
 
-    public function logout()
+    public function logoff()
     {
-        return $this->request('Logout');
+        return $this->request('Logoff');
     }
 
     public function agentLogoff($agentId, $soft = false)
