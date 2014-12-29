@@ -102,21 +102,22 @@ The `close()` method can be used to force-close the AMI connection and reject al
 
 The `end()` method can be used to soft-close the AMI connection once all pending actions are completed.
 
-> Advanced: Creating `Action` objects, sending them via AMI and waiting for incoming
-> `Response` objects is usually hidden behind the `Api` interface.
+> Advanced: Creating [`Action`](#action) objects, sending them via AMI and waiting for incoming
+> [`Response`](#response) objects is usually hidden behind the [`Api`](#api) interface.
 >
 > If you happen to need a custom or otherwise unsupported action, you can also do so manually
 > as follows. Consider filing a PR though :)
 >
 > The `createAction($name, $fields)` method can be used to construct a custom AMI action.
-> A unique ActionID will be added automatically (needed to match incoming responses).
+> A unique value will be added to "ActionID" field automatically (needed to match incoming responses).
 >
 > The `request(Action $action)` method can be used to queue the given messages to be sent via AMI
-> and wait for a `Response` object that matches its ActionID.
+> and wait for a [`Response`](#response) object that matches the value of its "ActionID" field.
 
 ### Api
 
-The `Api` wraps a given `Client` instance to provide a simple way to execute common actions.
+The `Api` wraps a given [`Client`](#client) instance to provide a simple way to execute common actions.
+This class represents the main interface to execute actions and wait for the corresponding responses.
 
 ```php
 $api = new Api($client);
@@ -127,10 +128,10 @@ $api->ping()->then(function (Response $response) {
 ```
 
 All public methods resemble their respective AMI actions.
-Listing all available actions is out of scope here, please refer to the class outline.
+Listing all available actions is out of scope here, please refer to the [class outline](src/Api.php).
 
 Sending actions is async (non-blocking), so you can actually send multiple action requests in parallel.
-The AMI will respond to each action with a `Response` object. The order is not guaranteed.
+The AMI will respond to each action with a [`Response`](#response) object. The order is not guaranteed.
 Sending actions uses a Promise-based interface that makes it easy to react to when an action is *fulfilled*
 (i.e. either successfully resolved or rejected with an error):
 
@@ -155,12 +156,12 @@ $api->ping()->then(
 > Advanced: Using the `Api` is not strictly necessary, but is the recommended way to execute common actions.
 >
 > If you happen to need a new or otherwise unsupported action, or additional arguments,
-> you can also do so manually. See the advanced `Client` usage above for details.
-> A PR that updates the `API` is very much appreciated :)
+> you can also do so manually. See the advanced [`Client`](#client) usage above for details.
+> A PR that updates the `Api` is very much appreciated :)
 
 ### Message
 
-The `Message` is an abstract base class for the `Response`, `Action` and `Event` value objects.
+The `Message` is an abstract base class for the [`Response`](#response), [`Action`](#action) and [`Event`](#event) value objects.
 It provides a common interface for these three message types.
 
 Each `Message` consists of any number of fields with each having a name and one or multiple values.
@@ -174,22 +175,26 @@ If no value was found, an empty `array()` is returned.
 
 The `getFields()` method can be used to get an array of all fields.
 
-The `getActionId()` method is a shortcut for accessing the value of the "ActionID" field.
+The `getActionId()` method can be used to get the unique action ID of this message.
+This is a shortcut to get the value of the "ActionID" field.
 
 #### Response
 
 The `Response` value object represents the incoming response received from the AMI.
+It shares all properties of the [`Message`](#message) parent class.
 
 #### Action
 
-The `Action` value object represents an outgoing action messages to be sent to the AMI.
+The `Action` value object represents an outgoing action message to be sent to the AMI.
+It shares all properties of the [`Message`](#message) parent class.
 
 #### Event
 
 The `Event` value object represents the incoming event received from the AMI.
+It shares all properties of the [`Message`](#message) parent class.
 
-The `getName()` method can be used to get the name of the event. This is a shortcut to
-get the value of the "Event" field.
+The `getName()` method can be used to get the name of the event.
+This is a shortcut to get the value of the "Event" field.
 
 ## Install
 
