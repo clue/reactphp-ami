@@ -43,9 +43,9 @@ class Factory
 
         if (isset($parts['user'])) {
             $promise = $promise->then(function (Client $client) use ($parts, $secure) {
-                $api = new Api($client);
+                $sender = new ActionSender($client);
 
-                return $api->login($parts['user'], $parts['pass'])->then(
+                return $sender->login($parts['user'], $parts['pass'])->then(
                     function ($response) use ($client) {
                         return $client;
                     },

@@ -2,7 +2,7 @@
 
 use Clue\React\Ami\Factory;
 use Clue\React\Ami\Client;
-use Clue\React\Ami\Api;
+use Clue\React\Ami\ActionSender;
 use Clue\React\Ami\Protocol\Response;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -14,11 +14,11 @@ $target = isset($argv[1]) ? $argv[1] : 'name:password@localhost';
 
 $factory->createClient($target)->then(function (Client $client) use ($loop) {
     echo 'Client connected. Use STDIN to send CLI commands via asterisk AMI.' . PHP_EOL;
-    $api = new Api($client);
+    $sender = new ActionSender($client);
 
-    $api->events(false);
+    $sender->events(false);
 
-    $api->listCommands()->then(function (Response $response) {
+    $sender->listCommands()->then(function (Response $response) {
         echo 'Commands: ' . implode(', ', array_keys($response->getFields())) . PHP_EOL;
     });
 
@@ -28,11 +28,11 @@ $factory->createClient($target)->then(function (Client $client) use ($loop) {
         $loop->removeReadStream(STDIN);
     });
 
-    $loop->addReadStream(STDIN, function () use ($api) {
+    $loop->addReadStream(STDIN, function () use ($sender) {
         $line = trim(fread(STDIN, 4096));
         echo '<' . $line . PHP_EOL;
 
-        $api->command($line)->then(
+        $sender->command($line)->then(
             function (Response $response) {
                 echo $response->getFieldValue('_') . PHP_EOL;
             },

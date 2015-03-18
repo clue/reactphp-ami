@@ -31,13 +31,14 @@ Once [installed](#install), you can use the following code to access your local
 Asterisk Telephony instance and issue some simple commands via AMI:
 
 ```php
+$loop = React\EventLoop\Factory::create();
 $factory = new Factory($loop);
 
 $factory->createClient('user:secret@localhost')->then(function (Client $client) {
     echo 'Client connected' . PHP_EOL;
     
-    $api = new Api($client);
-    $api->listCommands()->then(function (Response $response) {
+    $sender = new ActionSender($client);
+    $sender->listCommands()->then(function (Response $response) {
         echo 'Available commands:' . PHP_EOL;
         var_dump($response);
     });
@@ -103,7 +104,7 @@ The `close()` method can be used to force-close the AMI connection and reject al
 The `end()` method can be used to soft-close the AMI connection once all pending actions are completed.
 
 > Advanced: Creating [`Action`](#action) objects, sending them via AMI and waiting for incoming
-> [`Response`](#response) objects is usually hidden behind the [`Api`](#api) interface.
+> [`Response`](#response) objects is usually hidden behind the [`ActionSender`](#actionsender) interface.
 >
 > If you happen to need a custom or otherwise unsupported action, you can also do so manually
 > as follows. Consider filing a PR though :)
@@ -114,21 +115,21 @@ The `end()` method can be used to soft-close the AMI connection once all pending
 > The `request(Action $action)` method can be used to queue the given messages to be sent via AMI
 > and wait for a [`Response`](#response) object that matches the value of its "ActionID" field.
 
-### Api
+### ActionSender
 
-The `Api` wraps a given [`Client`](#client) instance to provide a simple way to execute common actions.
+The `ActionSender` wraps a given [`Client`](#client) instance to provide a simple way to execute common actions.
 This class represents the main interface to execute actions and wait for the corresponding responses.
 
 ```php
-$api = new Api($client);
+$sender = new ActionSender($client);
 
-$api->ping()->then(function (Response $response) {
+$sender->ping()->then(function (Response $response) {
     // response received for ping action
 });
 ```
 
 All public methods resemble their respective AMI actions.
-Listing all available actions is out of scope here, please refer to the [class outline](src/Api.php).
+Listing all available actions is out of scope here, please refer to the [class outline](src/ActionSender.php).
 
 Sending actions is async (non-blocking), so you can actually send multiple action requests in parallel.
 The AMI will respond to each action with a [`Response`](#response) object. The order is not guaranteed.
@@ -136,7 +137,7 @@ Sending actions uses a Promise-based interface that makes it easy to react to wh
 (i.e. either successfully resolved or rejected with an error):
 
 ```php
-$api->ping()->then(
+$sender->ping()->then(
     function (Response $response) {
         // response received for ping action
     },
@@ -153,11 +154,11 @@ $api->ping()->then(
 });
 ```
 
-> Advanced: Using the `Api` is not strictly necessary, but is the recommended way to execute common actions.
+> Advanced: Using the `ActionSender` is not strictly necessary, but is the recommended way to execute common actions.
 >
 > If you happen to need a new or otherwise unsupported action, or additional arguments,
 > you can also do so manually. See the advanced [`Client`](#client) usage above for details.
-> A PR that updates the `Api` is very much appreciated :)
+> A PR that updates the `ActionSender` is very much appreciated :)
 
 ### Message
 

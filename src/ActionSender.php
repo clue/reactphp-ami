@@ -8,7 +8,7 @@ use Clue\React\Ami\Protocol\Action;
 use UnexpectedValueException;
 use Clue\React\Ami\Protocol\Event;
 
-class Api
+class ActionSender
 {
     private $client;
 
