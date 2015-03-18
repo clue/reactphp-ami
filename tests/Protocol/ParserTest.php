@@ -78,7 +78,7 @@ class ParserTest extends TestCase
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals('Follows', $first->getFieldValue('Response'));
-        $this->assertEquals("Testing: yes\nAnother Line\n--END COMMAND--", $first->getFieldValue('_'));
+        $this->assertEquals("Testing: yes\nAnother Line\n--END COMMAND--", $first->getCommandOutput());
     }
 
     public function testParsingCommandResponseEmpty()
@@ -94,7 +94,7 @@ class ParserTest extends TestCase
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals('Follows', $first->getFieldValue('Response'));
-        $this->assertEquals("--END COMMAND--", $first->getFieldValue('_'));
+        $this->assertEquals("--END COMMAND--", $first->getCommandOutput());
     }
 
     public function testParsingResponseIsNotCommandResponse()

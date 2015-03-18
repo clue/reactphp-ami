@@ -34,7 +34,7 @@ $factory->createClient($target)->then(function (Client $client) use ($loop) {
 
         $api->command($line)->then(
             function (Response $response) {
-                echo $response->getFieldValue('_') . PHP_EOL;
+                echo $response->getCommandOutput() . PHP_EOL;
             },
             function (Exception $error) use ($line) {
                 echo 'Error executing "' . $line . '": ' . $error->getMessage() . PHP_EOL;

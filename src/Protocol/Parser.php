@@ -47,7 +47,7 @@ class Parser
         foreach ($lines as $i => $line) {
             $pos = strlen($line) - self::LCOMMAND_END - 1;
             if ($i === $last && substr($line, -self::LCOMMAND_END) === self::COMMAND_END && ($pos < 0 || $line[$pos] === "\n")) {
-                $key = '_';
+                $key = Response::FIELD_COMMAND_OUTPUT;
                 $value = $line;
             } else {
                 $pos = strpos($line, ': ');
