@@ -184,6 +184,17 @@ This is a shortcut to get the value of the "ActionID" field.
 The `Response` value object represents the incoming response received from the AMI.
 It shares all properties of the [`Message`](#message) parent class.
 
+The `getCommandOutput()` method can be used to get the resulting output of
+a "command" [`Action`](#action).
+This value is only available if this is actually a response to a "command" action,
+otherwise it defaults to `null`.
+
+```php
+$sender->command('help')->then(function (Response $response) {
+    echo $response->getCommandOutput();
+});
+```
+
 #### Action
 
 The `Action` value object represents an outgoing action message to be sent to the AMI.
