@@ -12,6 +12,7 @@ use Exception;
 use UnexpectedValueException;
 use Clue\React\Ami\Protocol\Message;
 use Clue\React\Ami\Protocol\ErrorException;
+use Clue\React\Ami\Protocol\UnexpectedMessageException;
 
 class Client extends EventEmitter
 {
@@ -66,6 +67,7 @@ class Client extends EventEmitter
         return $deferred->promise();
     }
 
+    /** @internal */
     public function handleMessage(Message $message)
     {
         if ($message instanceof Event) {
@@ -74,8 +76,7 @@ class Client extends EventEmitter
         }
         $id = $message->getActionId();
         if (!isset($this->pending[$id])) {
-            var_dump('unexpected', $message);
-            // unexpected message
+            $this->emit('error', array(new UnexpectedMessageException($message), $this));
             return;
         }
 

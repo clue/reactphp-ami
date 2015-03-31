@@ -4,6 +4,7 @@ use React\Stream\Stream;
 use Clue\React\Ami\Protocol\Parser;
 use Clue\React\Ami\Client;
 use React\EventLoop\Factory;
+use Clue\React\Ami\Protocol\Response;
 
 class ClientTest extends TestCase
 {
@@ -30,6 +31,16 @@ class ClientTest extends TestCase
         $client->on('close', $this->expectCallableOnce());
 
         $stream->emit('data', array("invalid chunk\r\n\r\ninvalid chunk\r\n\r\n"));
+    }
+
+    public function testUnexpectedResponseEmitsErrorAndClosesClient()
+    {
+        $client = new Client($this->createStreamMock());
+
+        $client->on('error', $this->expectCallableOnce());
+        $client->on('close', $this->expectCallableOnce());
+
+        $client->handleMessage(new Response(array('ActionID' => 1)));
     }
 
     private function createStreamMock()
