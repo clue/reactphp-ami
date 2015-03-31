@@ -61,6 +61,8 @@ $loop = \React\EventLoop\Factory::create();
 $factory = new Factory($loop);
 ```
 
+#### createClient()
+
 The `createClient($amiUrl)` method can be used to create a new `Client`.
 It helps with establishing a plain TCP/IP or secure SSL connection to the AMI
 and issuing an initial `login` action.
@@ -84,6 +86,8 @@ $factory->createClient('user:secret@localhost')->then(
 The `Client` is responsible for exchanging messages with the Asterisk Manager Interface
 and keeps track of pending actions.
 
+#### on()
+
 The `on($eventName, $eventHandler)` method can be used to register a new event handler.
 Incoming events and errors will be forwarded to registered event handler callbacks:
 
@@ -99,21 +103,31 @@ $client->on('error', function (Exception $e) {
 });
 ```
 
+#### close()
+
 The `close()` method can be used to force-close the AMI connection and reject all pending actions.
+
+#### end()
 
 The `end()` method can be used to soft-close the AMI connection once all pending actions are completed.
 
-> Advanced: Creating [`Action`](#action) objects, sending them via AMI and waiting for incoming
-> [`Response`](#response) objects is usually hidden behind the [`ActionSender`](#actionsender) interface.
->
-> If you happen to need a custom or otherwise unsupported action, you can also do so manually
-> as follows. Consider filing a PR though :)
->
-> The `createAction($name, $fields)` method can be used to construct a custom AMI action.
-> A unique value will be added to "ActionID" field automatically (needed to match incoming responses).
->
-> The `request(Action $action)` method can be used to queue the given messages to be sent via AMI
-> and wait for a [`Response`](#response) object that matches the value of its "ActionID" field.
+#### Advanced
+
+Creating [`Action`](#action) objects, sending them via AMI and waiting for incoming
+[`Response`](#response) objects is usually hidden behind the [`ActionSender`](#actionsender) interface.
+
+If you happen to need a custom or otherwise unsupported action, you can also do so manually
+as follows. Consider filing a PR though :)
+
+##### createAction()
+
+The `createAction($name, $fields)` method can be used to construct a custom AMI action.
+A unique value will be added to "ActionID" field automatically (needed to match incoming responses).
+
+##### request()
+
+The `request(Action $action)` method can be used to queue the given messages to be sent via AMI
+and wait for a [`Response`](#response) object that matches the value of its "ActionID" field.
 
 ### ActionSender
 
@@ -122,14 +136,21 @@ This class represents the main interface to execute actions and wait for the cor
 
 ```php
 $sender = new ActionSender($client);
+```
 
+#### Actions
+
+All public methods resemble their respective AMI actions.
+
+```php
 $sender->ping()->then(function (Response $response) {
     // response received for ping action
 });
 ```
 
-All public methods resemble their respective AMI actions.
 Listing all available actions is out of scope here, please refer to the [class outline](src/ActionSender.php).
+
+#### Processing
 
 Sending actions is async (non-blocking), so you can actually send multiple action requests in parallel.
 The AMI will respond to each action with a [`Response`](#response) object. The order is not guaranteed.
@@ -154,11 +175,13 @@ $sender->ping()->then(
 });
 ```
 
-> Advanced: Using the `ActionSender` is not strictly necessary, but is the recommended way to execute common actions.
->
-> If you happen to need a new or otherwise unsupported action, or additional arguments,
-> you can also do so manually. See the advanced [`Client`](#client) usage above for details.
-> A PR that updates the `ActionSender` is very much appreciated :)
+#### Custom actions
+
+Using the `ActionSender` is not strictly necessary, but is the recommended way to execute common actions.
+
+If you happen to need a new or otherwise unsupported action, or additional arguments,
+you can also do so manually. See the advanced [`Client`](#client) usage above for details.
+A PR that updates the `ActionSender` is very much appreciated :)
 
 ### Message
 
@@ -168,13 +191,21 @@ It provides a common interface for these three message types.
 Each `Message` consists of any number of fields with each having a name and one or multiple values.
 Field names are matched case-insensitive. The interpretation of values is application specific.
 
+#### getFieldValue()
+
 The `getFieldValue($key)` method can be used to get the first value for the given field key.
 If no value was found, `null` is returned.
+
+#### getFieldValues()
 
 The `getFieldValues($key)` method can be used to get a list of all values for the given field key.
 If no value was found, an empty `array()` is returned.
 
+#### getFields()
+
 The `getFields()` method can be used to get an array of all fields.
+
+#### getActionId()
 
 The `getActionId()` method can be used to get the unique action ID of this message.
 This is a shortcut to get the value of the "ActionID" field.
@@ -183,6 +214,8 @@ This is a shortcut to get the value of the "ActionID" field.
 
 The `Response` value object represents the incoming response received from the AMI.
 It shares all properties of the [`Message`](#message) parent class.
+
+##### getCommandOutput()
 
 The `getCommandOutput()` method can be used to get the resulting output of
 a "command" [`Action`](#action).
@@ -204,6 +237,8 @@ It shares all properties of the [`Message`](#message) parent class.
 
 The `Event` value object represents the incoming event received from the AMI.
 It shares all properties of the [`Message`](#message) parent class.
+
+##### getName()
 
 The `getName()` method can be used to get the name of the event.
 This is a shortcut to get the value of the "Event" field.
