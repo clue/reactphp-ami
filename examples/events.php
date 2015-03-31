@@ -2,7 +2,7 @@
 
 use Clue\React\Ami\Factory;
 use Clue\React\Ami\Client;
-use Clue\React\Ami\Api;
+use Clue\React\Ami\ActionSender;
 use Clue\React\Ami\Protocol\Response;
 use Clue\React\Ami\Protocol\Event;
 
@@ -17,8 +17,8 @@ $factory->createClient($target)->then(
     function (Client $client) use ($loop) {
         echo 'Client connected ' . PHP_EOL;
 
-        $api = new Api($client);
-        $api->events(true);
+        $sender = new ActionSender($client);
+        $sender->events(true);
 
         $client->on('close', function() {
             echo 'Connection closed' . PHP_EOL;

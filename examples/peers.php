@@ -2,7 +2,7 @@
 
 use Clue\React\Ami\Factory;
 use Clue\React\Ami\Client;
-use Clue\React\Ami\Api;
+use Clue\React\Ami\ActionSender;
 use Clue\React\Ami\Collector;
 use Clue\React\Ami\Protocol\Collection;
 

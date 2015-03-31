@@ -3,7 +3,7 @@
 use Clue\React\Ami\Factory;
 use React\Promise\PromiseInterface;
 use Clue\React\Ami\Client;
-use Clue\React\Ami\Api;
+use Clue\React\Ami\ActionSender;
 use Clue\React\Ami\Protocol\Response;
 
 class FunctionalTest extends TestCase
@@ -42,9 +42,9 @@ class FunctionalTest extends TestCase
      */
     public function testPing(Client $client)
     {
-        $api = new Api($client);
+        $sender = new ActionSender($client);
 
-        $pong = $this->waitFor($api->ping());
+        $pong = $this->waitFor($sender->ping());
         /* @var $pong Response */
     }
 
@@ -62,11 +62,11 @@ class FunctionalTest extends TestCase
      * @depends testConnection
      * @param Client $client
      */
-    public function testApiLogoffDisconnects(Client $client)
+    public function testActionSenderLogoffDisconnects(Client $client)
     {
-        $api = new Api($client);
+        $sender = new ActionSender($client);
 
-        $ret = $this->waitFor($api->logoff());
+        $ret = $this->waitFor($sender->logoff());
         /* @var $ret Response */
 
         $this->assertFalse($client->isBusy());
@@ -79,7 +79,7 @@ class FunctionalTest extends TestCase
     }
 
     /**
-     * @depends testApiLogoffDisconnects
+     * @depends testActionSenderLogoffDisconnects
      * @param Client $client
      * @expectedException Exception
      */
