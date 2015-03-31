@@ -208,6 +208,24 @@ The recommended way to install this library is [through composer](http://getcomp
 }
 ```
 
+## Tests
+
+In order to run the tests, you need PHPUnit:
+
+```bash
+$ phpunit
+```
+
+The test suite contains both unit tests and functional integration tests.
+The functional tests require access to a running Asterisk server instance
+and will be skipped by default.
+If you want to also run the functional tests, you need to supply *your* AMI login
+details in an environment variable like this:
+
+```bash
+$ LOGIN=username:password@localhost phpunit
+```
+
 ## License
 
 MIT
