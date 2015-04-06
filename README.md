@@ -53,18 +53,25 @@ See also the [examples](examples).
 
 ### Factory
 
-The `Factory` is responsible for creating your `Client` instance.
-It also registers everything with the main `EventLoop`.
+The `Factory` is responsible for creating your [`Client`](#client) instance.
+It also registers everything with the main [`EventLoop`](https://github.com/reactphp/event-loop#usage).
 
 ```php
 $loop = \React\EventLoop\Factory::create();
 $factory = new Factory($loop);
 ```
 
+If you need custom DNS or proxy settings, you can explicitly pass a
+custom instance of the [`ConnectorInterface`](https://github.com/reactphp/socket-client#connectorinterface):
+
+```php
+$factory = new Factory($loop, $connector);
+```
+
 #### createClient()
 
-The `createClient($amiUrl)` method can be used to create a new `Client`.
-It helps with establishing a plain TCP/IP or secure SSL connection to the AMI
+The `createClient($amiUrl)` method can be used to create a new [`Client`](#client).
+It helps with establishing a plain TCP/IP or secure SSL/TLS connection to the AMI
 and issuing an initial `login` action.
 
 ```php
@@ -85,6 +92,8 @@ $factory->createClient('user:secret@localhost')->then(
 
 The `Client` is responsible for exchanging messages with the Asterisk Manager Interface
 and keeps track of pending actions.
+
+If you want to send outgoing actions, see below for the [`ActionSender`](#actionsender) class.
 
 #### on()
 
