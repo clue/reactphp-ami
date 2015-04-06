@@ -163,7 +163,7 @@ Listing all available actions is out of scope here, please refer to the [class o
 
 Sending actions is async (non-blocking), so you can actually send multiple action requests in parallel.
 The AMI will respond to each action with a [`Response`](#response) object. The order is not guaranteed.
-Sending actions uses a Promise-based interface that makes it easy to react to when an action is *fulfilled*
+Sending actions uses a [Promise](https://github.com/reactphp/promise)-based interface that makes it easy to react to when an action is *fulfilled*
 (i.e. either successfully resolved or rejected with an error):
 
 ```php
