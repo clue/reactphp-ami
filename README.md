@@ -23,8 +23,6 @@ monitor the status of subscribers, channels or queues.
 * **Good test coverage** -
   Comes with an automated tests suite and is regularly tested against versions as old as Asterisk 1.8+
 
-> Note: This project is in beta stage! Feel free to report any issues you encounter.
-
 ## Quickstart example
 
 Once [installed](#install), you can use the following code to access your local
