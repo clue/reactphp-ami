@@ -34,7 +34,7 @@ $factory = new Factory($loop);
 
 $factory->createClient('user:secret@localhost')->then(function (Client $client) {
     echo 'Client connected' . PHP_EOL;
-    
+
     $sender = new ActionSender($client);
     $sender->listCommands()->then(function (Response $response) {
         echo 'Available commands:' . PHP_EOL;
@@ -145,6 +145,25 @@ This class represents the main interface to execute actions and wait for the cor
 $sender = new ActionSender($client);
 ```
 
+### EventListener
+
+The `EventListener` wraps a given [`Client`](#client) instance to provide a simple way to listen specific events.
+You can also listen to `close` and `error` events.
+
+```php
+$listener = new EventListener($client);
+
+$listener->on('Hangup', function(Event $event){
+    // process an incoming Hangup event
+});
+$listener->on('close', function () {
+    // the connection to the AMI just closed
+});
+$listener->on('error', function (Exception $e) {
+    // and error has just been detected, the connection will terminate...
+});
+```
+
 #### Actions
 
 All public methods resemble their respective AMI actions.
@@ -171,7 +190,7 @@ $sender->ping()->then(
     },
     function (Exception $e) {
         // an error occured while executing the action
-        
+
         if ($e instanceof ErrorException) {
             // we received a valid error response (such as authorization error)
             $response = $e->getResponse();
