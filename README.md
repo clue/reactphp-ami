@@ -110,6 +110,25 @@ $client->on('error', function (Exception $e) {
 });
 ```
 
+#### keepAlive()
+
+The `keepAlive(LoopInterface $loop[, $interval = 75])` method sends periodic `Ping` actions
+to prevent the connection to be closed by inativity.
+
+```php
+$loop = React\EventLoop\Factory::create();
+$factory = new Factory($loop);
+
+$factory->createClient('user:secret@localhost')->then(
+    function (Client $client) use ($loop){
+        $client->keepAlive($loop);
+    },
+    function (Exception $e) {
+        // an error occured while trying to connect or authorize client
+    }
+);
+```
+
 #### close()
 
 The `close()` method can be used to force-close the AMI connection and reject all pending actions.
