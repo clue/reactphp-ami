@@ -138,7 +138,7 @@ class Client extends EventEmitter
 
     public function keepAlive(LoopInterface $loop, $interval = 75)
     {
-        $loop->addPeriodicTimer($interval, function() use ($this){
+        $loop->addPeriodicTimer($interval, function(){
             $this->request($this->createAction('Ping'));
         });
     }
