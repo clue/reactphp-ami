@@ -52,10 +52,16 @@ class Parser
             } else {
                 $pos = strpos($line, ': ');
                 if ($pos === false) {
-                    throw new \UnexpectedValueException('Parse error, no colon in line "' . $line . '" found');
+                    if (substr($line, -1, 1) == ':') {
+                        $key = substr($line, 0, -1);
+                        $value = "";
+                    } else {
+                        throw new \UnexpectedValueException('Parse error, no colon in line "' . $line . '" found');
+                    }
+                } else {
+                    $value = substr($line, $pos + 2);
+                    $key = substr($line, 0, $pos);
                 }
-                $value = substr($line, $pos + 2);
-                $key = substr($line, 0, $pos);
             }
 
             if (isset($fields[$key])) {

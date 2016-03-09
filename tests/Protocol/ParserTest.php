@@ -134,4 +134,12 @@ class ParserTest extends TestCase
 
         $parser->push("Response:NoSpace\r\n\r\n");
     }
+
+    public function testParsingEmptyValue()
+    {
+        $parser = new Parser();
+        $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
+
+        $parser->push("Response:\r\n\r\n");
+    }
 }
