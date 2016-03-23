@@ -38,4 +38,12 @@ class FactoryTest extends TestCase
 
         $this->factory->createClient('localhost');
     }
+
+    public function testCreateClientUsesTlsConnectorWithTlsLocation()
+    {
+        $promise = new Promise(function () { });
+        $this->tls->expects($this->once())->method('create')->with('ami.local', 1234)->willReturn($promise);
+
+        $this->factory->createClient('tls://ami.local:1234');
+    }
 }

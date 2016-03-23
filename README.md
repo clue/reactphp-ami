@@ -104,9 +104,9 @@ It helps with establishing a plain TCP/IP or secure SSL/TLS connection to the AM
 and issuing an initial `login` action.
 
 ```php
-$factory->createClient('user:secret@localhost')->then(
+$factory->createClient($amiUrl)->then(
     function (Client $client) {
-        // client connected and authenticated
+        // client connected (and authenticated)
     },
     function (Exception $e) {
         // an error occured while trying to connect or authorize client
@@ -114,8 +114,29 @@ $factory->createClient('user:secret@localhost')->then(
 );
 ```
 
-> Note: The given $amiUrl *must* include a host, it *should* include a username and secret
-> and it *can* include a scheme (tcp/ssl) and port definition.
+The `$amiUrl` contains the host and optional port to connect to:
+
+```php
+$factory->createClient('127.0.0.1:5038');
+```
+
+> If the `$amiUrl` is `null` (or omitted) this method defaults to connecting
+  to your local host (`127.0.0.1:5038`).
+
+The above examples to not pass any authentication details, so you may have to
+call `ActionSender::login()` after connecting or use the recommended shortcut
+to pass a username and secret for your AMI login details like this:
+
+```php
+$factory->createClient('user:secret@localhost');
+```
+
+The `Factory` defaults to establishing a plaintext TCP connection.
+If you want to connect through a secure TLS proxy, you can use the `tls` scheme:
+
+```php
+$factory->createClient('tls://user:secret@localhost:12345');
+```
 
 ### Client
 

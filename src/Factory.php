@@ -35,7 +35,7 @@ class Factory
     {
         $parts = $this->parseUrl($address);
 
-        $secure = (isset($parts['schema']) && $parts['schema'] !== 'tcp');
+        $secure = (isset($parts['scheme']) && $parts['scheme'] !== 'tcp');
         $connector = $secure ? $this->secureConnector : $this->connector;
 
         $promise = $connector->create($parts['host'], $parts['port'])->then(function (Stream $stream) {
