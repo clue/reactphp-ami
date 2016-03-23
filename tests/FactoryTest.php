@@ -2,6 +2,7 @@
 
 use Clue\React\Ami\Factory;
 use React\Promise\Promise;
+
 class FactoryTest extends TestCase
 {
     private $loop;
@@ -43,5 +44,12 @@ class FactoryTest extends TestCase
         $this->tcp->expects($this->once())->method('connect')->with('tls://ami.local:1234')->willReturn($promise);
 
         $this->factory->createClient('tls://ami.local:1234');
+    }
+
+    public function testCreateClientWithInvalidUrlWillRejectPromise()
+    {
+        $promise = $this->factory->createClient('///');
+
+        $promise->then(null, $this->expectCallableOnce());
     }
 }

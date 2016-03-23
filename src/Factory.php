@@ -7,6 +7,7 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use React\Socket\ConnectorInterface;
 use InvalidArgumentException;
+use React\Promise;
 
 class Factory
 {
@@ -25,7 +26,11 @@ class Factory
 
     public function createClient($address = null)
     {
-        $parts = $this->parseUrl($address);
+        try {
+            $parts = $this->parseUrl($address);
+        } catch (\Exception $e) {
+            return Promise\reject($e);
+        }
 
         if (isset($parts['scheme']) && $parts['scheme'] !== 'tcp') {
             $parts['host'] = 'tls://' . $parts['host'];

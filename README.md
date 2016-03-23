@@ -100,8 +100,8 @@ $factory = new Factory($loop, $connector);
 #### createClient()
 
 The `createClient(string $amiUrl): PromiseInterface<Client>` method can be used to create a new [`Client`](#client).
-It helps with establishing a plain TCP/IP or secure SSL/TLS connection to the AMI
-and issuing an initial `login` action.
+It helps with establishing a plain TCP/IP or secure TLS connection to the AMI
+and optionally issuing an initial `login` action.
 
 ```php
 $factory->createClient($amiUrl)->then(
@@ -113,6 +113,10 @@ $factory->createClient($amiUrl)->then(
     }
 );
 ```
+
+The method returns a [Promise](https://github.com/reactphp/promise) that will
+resolve with the [`Client`](#client) instance on success or will reject with an
+`Exception` if the URL is invalid or the connection or authentication fails.
 
 The `$amiUrl` contains the host and optional port to connect to:
 
