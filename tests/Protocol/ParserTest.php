@@ -124,14 +124,33 @@ class ParserTest extends TestCase
         $parser->push("invalid response\r\n\r\n");
     }
 
-    /**
-     * @expectedException UnexpectedValueException
-     */
-    public function testParsingInvalidResponseNoSpaceAfterColonFails()
+    public function testParsingMissingSpaceWithValue()
     {
         $parser = new Parser();
         $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
 
-        $parser->push("Response:NoSpace\r\n\r\n");
+        $ret = $parser->push("Response:NoSpace\r\n\r\n");
+        $this->assertCount(1, $ret);
+
+        $first = reset($ret);
+        /* @var $first Clue\React\Ami\Protocol\Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
+        $this->assertEquals('NoSpace', $first->getFieldValue('Response'));
+    }
+
+    public function testParsingMissingSpaceEmptyValue()
+    {
+        $parser = new Parser();
+        $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
+
+        $ret = $parser->push("Response:\r\n\r\n");
+        $this->assertCount(1, $ret);
+
+        $first = reset($ret);
+        /* @var $first Clue\React\Ami\Protocol\Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
+        $this->assertEquals('', $first->getFieldValue('Response'));
     }
 }
