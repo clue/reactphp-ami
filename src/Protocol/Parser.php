@@ -50,18 +50,13 @@ class Parser
                 $key = Response::FIELD_COMMAND_OUTPUT;
                 $value = $line;
             } else {
-                $pos = strpos($line, ': ');
+                $pos = strpos($line, ':');
                 if ($pos === false) {
-                    if (substr($line, -1, 1) == ':') {
-                        $key = substr($line, 0, -1);
-                        $value = "";
-                    } else {
-                        throw new \UnexpectedValueException('Parse error, no colon in line "' . $line . '" found');
-                    }
-                } else {
-                    $value = substr($line, $pos + 2);
-                    $key = substr($line, 0, $pos);
+                    throw new \UnexpectedValueException('Parse error, no colon in line "' . $line . '" found');
                 }
+
+                $value = (string)substr($line, $pos + (isset($line[$pos + 1]) && $line[$pos + 1] === ' ' ? 2 : 1));
+                $key = substr($line, 0, $pos);
             }
 
             if (isset($fields[$key])) {
