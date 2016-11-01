@@ -23,6 +23,37 @@ monitor the status of subscribers, channels or queues.
 * **Good test coverage** -
   Comes with an automated tests suite and is regularly tested against versions as old as Asterisk 1.8+
 
+**Table of contents**
+
+* [Quickstart example](#quickstart-example)
+* [Usage](#usage)
+  * [Factory](#factory)
+    * [createClient)](#createclient)
+  * [Client](#client)
+    * [on()](#on)
+    * [close()](#close)
+    * [end()](#end)
+    * [Advanced](#advanced)
+      * [createAction()](#createaction)
+      * [request()](#request)
+  * [ActionSender](#actionsender)
+    * [Actions](#actions)
+    * [Processing](#processing)
+    * [Custom actions](#custom-actions)
+  * [Message](#message)
+    * [getFieldValue()](#getfieldvalue)
+    * [getFieldValues()](#getfieldvalues)
+    * [getFields()](#getfields)
+    * [getActionId()](#getactionid)
+  * [Response](#response)
+    * [getCommandOutput()](#getcommandoutput)
+  * [Action](#action)
+  * [Event](#event)
+    * [getName()](#getname)
+* [Install](#install)
+* [Tests](#tests)
+* [License](#license)
+
 ## Quickstart example
 
 Once [installed](#install), you can use the following code to access your local
