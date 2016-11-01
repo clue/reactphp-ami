@@ -99,7 +99,7 @@ $factory = new Factory($loop, $connector);
 
 #### createClient()
 
-The `createClient($amiUrl)` method can be used to create a new [`Client`](#client).
+The `createClient(string $amiUrl): PromiseInterface<Client>` method can be used to create a new [`Client`](#client).
 It helps with establishing a plain TCP/IP or secure SSL/TLS connection to the AMI
 and issuing an initial `login` action.
 
@@ -126,7 +126,7 @@ If you want to send outgoing actions, see below for the [`ActionSender`](#action
 
 #### on()
 
-The `on($eventName, $eventHandler)` method can be used to register a new event handler.
+The `on(string $eventName, callable $eventHandler): void` method can be used to register a new event handler.
 Incoming events and errors will be forwarded to registered event handler callbacks:
 
 ```php
@@ -143,11 +143,11 @@ $client->on('error', function (Exception $e) {
 
 #### close()
 
-The `close()` method can be used to force-close the AMI connection and reject all pending actions.
+The `close(): void` method can be used to force-close the AMI connection and reject all pending actions.
 
 #### end()
 
-The `end()` method can be used to soft-close the AMI connection once all pending actions are completed.
+The `end(): void` method can be used to soft-close the AMI connection once all pending actions are completed.
 
 #### Advanced
 
@@ -159,12 +159,12 @@ as follows. Consider filing a PR though :)
 
 ##### createAction()
 
-The `createAction($name, $fields)` method can be used to construct a custom AMI action.
+The `createAction(string $name, array $fields): Action` method can be used to construct a custom AMI action.
 A unique value will be added to "ActionID" field automatically (needed to match incoming responses).
 
 ##### request()
 
-The `request(Action $action)` method can be used to queue the given messages to be sent via AMI
+The `request(Action $action): PromiseInterface<Response>` method can be used to queue the given messages to be sent via AMI
 and wait for a [`Response`](#response) object that matches the value of its "ActionID" field.
 
 ### ActionSender
@@ -231,21 +231,21 @@ Field names are matched case-insensitive. The interpretation of values is applic
 
 #### getFieldValue()
 
-The `getFieldValue($key)` method can be used to get the first value for the given field key.
+The `getFieldValue(string $key): ?string` method can be used to get the first value for the given field key.
 If no value was found, `null` is returned.
 
 #### getFieldValues()
 
-The `getFieldValues($key)` method can be used to get a list of all values for the given field key.
+The `getFieldValues(string $key): string[]` method can be used to get a list of all values for the given field key.
 If no value was found, an empty `array()` is returned.
 
 #### getFields()
 
-The `getFields()` method can be used to get an array of all fields.
+The `getFields(): array` method can be used to get an array of all fields.
 
 #### getActionId()
 
-The `getActionId()` method can be used to get the unique action ID of this message.
+The `getActionId(): string` method can be used to get the unique action ID of this message.
 This is a shortcut to get the value of the "ActionID" field.
 
 #### Response
@@ -255,7 +255,7 @@ It shares all properties of the [`Message`](#message) parent class.
 
 ##### getCommandOutput()
 
-The `getCommandOutput()` method can be used to get the resulting output of
+The `getCommandOutput(): ?string` method can be used to get the resulting output of
 a "command" [`Action`](#action).
 This value is only available if this is actually a response to a "command" action,
 otherwise it defaults to `null`.
@@ -278,7 +278,7 @@ It shares all properties of the [`Message`](#message) parent class.
 
 ##### getName()
 
-The `getName()` method can be used to get the name of the event.
+The `getName(): ?string` method can be used to get the name of the event.
 This is a shortcut to get the value of the "Event" field.
 
 ## Install
