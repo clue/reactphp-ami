@@ -1,8 +1,11 @@
-# CHANGELOG
+# Changelog
 
-This file is a manually maintained list of changes for each release. Feel free
-to add your changes here when sending pull requests. Also send corrections if
-you spot any mistakes.
+## 0.3.1 (2016-11-01)
+
+* Fix: Make parser more robust by supporting parsing messages with missing space after colon
+  (#29 by @bonan, @clue)
+
+* Improve documentation
 
 ## 0.3.0 (2015-03-31)
 
