@@ -11,11 +11,11 @@
         }
     ],
     "require": {
-        "php": ">=5.3",
-        "evenement/evenement": "~1.0|~2.0",
-        "react/promise": "~1.0|~2.0",
-        "react/socket-client": "0.3.*|0.4.*",
-        "react/event-loop": "0.3.*|0.4.*"
+        "php": "^5.3 || ^7.0",
+        "evenement/evenement": "^2.0 || ^1.0",
+        "react/promise": "^2.0 || ^1.0",
+        "react/socket-client": "^0.5 || ^0.4 || ^0.3",
+        "react/event-loop": "^0.4 || ^0.3"
     },
     "autoload": {
         "psr-4": { "Clue\\React\\Ami\\": "src/" }
