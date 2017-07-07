@@ -45,6 +45,6 @@ class ClientTest extends TestCase
 
     private function createStreamMock()
     {
-        return new Stream(fopen('php://memory', 'r+'), $this->getMock('React\EventLoop\LoopInterface'));
+        return new Stream(fopen('php://memory', 'r+'), $this->getMockBuilder('React\EventLoop\LoopInterface')->getMock());
     }
 }
