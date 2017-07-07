@@ -17,6 +17,9 @@
         "react/socket-client": "0.3.*|0.4.*",
         "react/event-loop": "0.3.*|0.4.*"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^5.0 || ^4.8"
+    },
     "autoload": {
         "psr-4": { "Clue\\React\\Ami\\": "src/" }
     }

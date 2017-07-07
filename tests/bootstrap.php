@@ -27,7 +27,7 @@ class TestCase extends PHPUnit_Framework_TestCase
      */
     protected function createCallableMock()
     {
-        return $this->getMock('CallableStub');
+        return $this->getMockBuilder('CallableStub')->getMock();
     }
 }
 
