@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.2 (2017-09-04)
+
+* Feature / Fix: Update SocketClient to v0.5 and fix secure connection via TLS
+  (#38 by @clue)
+
+* Improve test suite by adding PHPUnit to require-dev,
+  fix HHVM build for now again and ignore future HHVM build errors, 
+  test against legacy PHP 5.3 through PHP 7.1 and
+  lock Travis distro so new defaults will not break the build
+  (#34, #35, #36 and #37 by @clue)
+
 ## 0.3.1 (2016-11-01)
 
 * Fix: Make parser more robust by supporting parsing messages with missing space after colon
