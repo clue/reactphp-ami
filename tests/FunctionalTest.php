@@ -1,10 +1,10 @@
 <?php
 
 use Clue\React\Ami\Factory;
-use React\Promise\PromiseInterface;
 use Clue\React\Ami\Client;
 use Clue\React\Ami\ActionSender;
-use Clue\React\Ami\Protocol\Response;
+use Clue\React\Block;
+use React\Promise\PromiseInterface;
 
 class FunctionalTest extends TestCase
 {
@@ -90,23 +90,6 @@ class FunctionalTest extends TestCase
 
     private function waitFor(PromiseInterface $promise)
     {
-        $resolved = null;
-        $exception = null;
-
-        $promise->then(function ($c) use (&$resolved) {
-            $resolved = $c;
-        }, function($error) use (&$exception) {
-            $exception = $error;
-        });
-
-        while ($resolved === null && $exception === null) {
-            self::$loop->tick();
-        }
-
-        if ($exception !== null) {
-            throw $exception;
-        }
-
-        return $resolved;
+        return Block\await($promise, self::$loop, 5.0);
     }
 }

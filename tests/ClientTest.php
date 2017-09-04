@@ -16,19 +16,19 @@ class ClientTest extends TestCase
 
         $client->on('close', $this->expectCallableOnce());
 
-        $stream->close();
-        //$stream->emit('close', array($this));
+        $stream->emit('close');
     }
 
     public function testParserExceptionForwardsErrorAndClosesClient()
     {
         $stream = $this->createStreamMock();
+        $stream->expects($this->once())->method('close');
+
         $parser = new Parser();
 
         $client = new Client($stream, $parser);
 
         $client->on('error', $this->expectCallableOnce());
-        $client->on('close', $this->expectCallableOnce());
 
         $stream->emit('data', array("invalid chunk\r\n\r\ninvalid chunk\r\n\r\n"));
     }
@@ -45,6 +45,6 @@ class ClientTest extends TestCase
 
     private function createStreamMock()
     {
-        return new Stream(fopen('php://memory', 'r+'), $this->getMockBuilder('React\EventLoop\LoopInterface')->getMock());
+        return $this->getMockBuilder('React\Socket\Connection')->disableOriginalConstructor()->setMethods(array('write', 'close'))->getMock();
     }
 }
