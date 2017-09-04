@@ -3,6 +3,7 @@
 namespace Clue\React\Ami;
 
 use React\EventLoop\LoopInterface;
+use React\SocketClient\ConnectorInterface;
 use React\SocketClient\Connector;
 use React\SocketClient\SecureConnector;
 use React\Dns\Resolver\Factory as ResolverFactory;
@@ -15,7 +16,7 @@ class Factory
     private $connector;
     private $secureConnector;
 
-    public function __construct(LoopInterface $loop, Connector $connector = null, SecureConnector $secureConnector = null)
+    public function __construct(LoopInterface $loop, ConnectorInterface $connector = null, ConnectorInterface $secureConnector = null)
     {
         if ($connector === null) {
             $resolverFactory = new ResolverFactory();
@@ -34,7 +35,7 @@ class Factory
     {
         $parts = $this->parseUrl($address);
 
-        $secure = (isset($parts['schema']) && $parts['schema'] !== 'tcp');
+        $secure = (isset($parts['scheme']) && $parts['scheme'] !== 'tcp');
         $connector = $secure ? $this->secureConnector : $this->connector;
 
         $promise = $connector->create($parts['host'], $parts['port'])->then(function (Stream $stream) {
