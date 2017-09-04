@@ -24,19 +24,19 @@ class Factory
         $this->connector = $connector;
     }
 
-    public function createClient($address = null)
+    public function createClient($url)
     {
-        try {
-            $parts = $this->parseUrl($address);
-        } catch (\Exception $e) {
-            return Promise\reject($e);
+        $parts = parse_url((strpos($url, '://') === false ? 'tcp://' : '') . $url);
+        if (!$parts || !isset($parts['scheme'], $parts['host'])) {
+            return Promise\reject(new InvalidArgumentException('Given URL "' . $url . '" can not be parsed'));
         }
 
-        if (isset($parts['scheme']) && $parts['scheme'] !== 'tcp') {
-            $parts['host'] = 'tls://' . $parts['host'];
+        // use default port 5038
+        if (!isset($parts['port'])) {
+            $parts['port'] = 5038;
         }
 
-        $promise = $this->connector->connect($parts['host'] . ':' . $parts['port'])->then(function (ConnectionInterface $stream) {
+        $promise = $this->connector->connect($parts['scheme'] . '://' . $parts['host'] . ':' . $parts['port'])->then(function (ConnectionInterface $stream) {
             return new Client($stream);
         });
 
@@ -57,26 +57,5 @@ class Factory
         }
 
         return $promise;
-    }
-
-    private function parseUrl($target)
-    {
-        if ($target === null) {
-            $target = 'tcp://127.0.0.1';
-        }
-        if (strpos($target, '://') === false) {
-            $target = 'tcp://' . $target;
-        }
-
-        $parts = parse_url($target);
-        if ($parts === false || !isset($parts['host'])) {
-            throw new InvalidArgumentException('Given URL can not be parsed');
-        }
-
-        if (!isset($parts['port'])) {
-            $parts['port'] = '5038';
-        }
-
-        return $parts;
     }
 }

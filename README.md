@@ -124,9 +124,6 @@ The `$amiUrl` contains the host and optional port to connect to:
 $factory->createClient('127.0.0.1:5038');
 ```
 
-> If the `$amiUrl` is `null` (or omitted) this method defaults to connecting
-  to your local host (`127.0.0.1:5038`).
-
 The above examples to not pass any authentication details, so you may have to
 call `ActionSender::login()` after connecting or use the recommended shortcut
 to pass a username and secret for your AMI login details like this:
