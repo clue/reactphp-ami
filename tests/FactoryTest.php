@@ -26,7 +26,7 @@ class FactoryTest extends TestCase
     public function testCreateClientUsesTcpConnectorWithDefaultLocation()
     {
         $promise = new Promise(function () { });
-        $this->tcp->expects($this->once())->method('create')->with('127.0.0.1', 5038)->willReturn($promise);
+        $this->tcp->expects($this->once())->method('connect')->with('127.0.0.1:5038')->willReturn($promise);
 
         $this->factory->createClient();
     }
@@ -34,7 +34,7 @@ class FactoryTest extends TestCase
     public function testCreateClientUsesTcpConnectorWithLocalhostLocation()
     {
         $promise = new Promise(function () { });
-        $this->tcp->expects($this->once())->method('create')->with('127.0.0.1', 5038)->willReturn($promise);
+        $this->tcp->expects($this->once())->method('connect')->with('127.0.0.1:5038')->willReturn($promise);
 
         $this->factory->createClient('localhost');
     }
@@ -42,7 +42,7 @@ class FactoryTest extends TestCase
     public function testCreateClientUsesTlsConnectorWithTlsLocation()
     {
         $promise = new Promise(function () { });
-        $this->tls->expects($this->once())->method('create')->with('ami.local', 1234)->willReturn($promise);
+        $this->tls->expects($this->once())->method('connect')->with('ami.local:1234')->willReturn($promise);
 
         $this->factory->createClient('tls://ami.local:1234');
     }

@@ -2,17 +2,17 @@
 
 namespace Clue\React\Ami;
 
-use Clue\React\Ami\Protocol\Event;
 use Clue\React\Ami\Protocol\Action;
-use Evenement\EventEmitter;
-use React\Stream\Stream;
+use Clue\React\Ami\Protocol\ErrorException;
+use Clue\React\Ami\Protocol\Event;
+use Clue\React\Ami\Protocol\Message;
 use Clue\React\Ami\Protocol\Parser;
+use Clue\React\Ami\Protocol\UnexpectedMessageException;
+use Evenement\EventEmitter;
 use React\Promise\Deferred;
+use React\SocketClient\ConnectionInterface;
 use Exception;
 use UnexpectedValueException;
-use Clue\React\Ami\Protocol\Message;
-use Clue\React\Ami\Protocol\ErrorException;
-use Clue\React\Ami\Protocol\UnexpectedMessageException;
 
 class Client extends EventEmitter
 {
@@ -23,7 +23,7 @@ class Client extends EventEmitter
 
     private $actionId = 0;
 
-    public function __construct(Stream $stream, Parser $parser = null)
+    public function __construct(ConnectionInterface $stream, Parser $parser = null)
     {
         if ($parser === null) {
             $parser = new Parser();
@@ -47,8 +47,6 @@ class Client extends EventEmitter
         $this->on('error', array($that, 'close'));
 
         $this->stream->on('close', array ($that, 'close'));
-
-        $this->stream->resume();
     }
 
     public function request(Action $message)

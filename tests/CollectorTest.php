@@ -51,7 +51,7 @@ class CollectorTest extends TestCase
 
     private function createClientMock()
     {
-        $stream = $this->getMockBuilder('React\Stream\Stream')->disableOriginalConstructor()->getMock();
+        $stream = $this->getMockBuilder('React\SocketClient\StreamConnection')->disableOriginalConstructor()->getMock();
 
         $client = $this->getMockBuilder('Clue\React\Ami\Client')->setMethods(array('createAction'))->setConstructorArgs(array($stream))->getMock();
 
