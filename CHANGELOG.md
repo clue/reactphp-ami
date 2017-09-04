@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.4.0 (2017-09-04)
+
+*   Feature / BC break: Simplify `Collection` by extending `Response` and merging `Collector` into `ActionSender`
+    (#41 by @clue)
+
+    ```
+    // old
+    $collector = new Collector($client);
+    $collector->coreShowChannels()->then(function (Collection $collection) {
+        var_dump($collection->getResponse()->getFieldValue('Message'));
+    });
+
+    // new
+    $collector = new ActionSender($client);
+    $collector->coreShowChannels()->then(function (Collection $collection) {
+        var_dump($collection->getFieldValue('Message'));
+    });
+    ```
+
+*   Feature / BC break: Replace deprecated SocketClient with new Socket component and
+    improve forward compatibility with upcoming ReactPHP components
+    (#39 by @clue)
+
+*   Feature / BC break: Consistently require URL when creating client
+    (#40 by @clue)
+
 ## 0.3.2 (2017-09-04)
 
 * Feature / Fix: Update SocketClient to v0.5 and fix secure connection via TLS
