@@ -31,9 +31,9 @@ class Factory
             return Promise\reject(new InvalidArgumentException('Given URL "' . $url . '" can not be parsed'));
         }
 
-        // use default port 5038
+        // use default port 5039 for `tls://` or 5038 otherwise
         if (!isset($parts['port'])) {
-            $parts['port'] = 5038;
+            $parts['port'] = $parts['scheme'] === 'tls' ? 5039 : 5038;
         }
 
         $promise = $this->connector->connect($parts['scheme'] . '://' . $parts['host'] . ':' . $parts['port'])->then(function (ConnectionInterface $stream) {

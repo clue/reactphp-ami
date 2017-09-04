@@ -30,6 +30,14 @@ class FactoryTest extends TestCase
         $this->factory->createClient('localhost');
     }
 
+    public function testCreateClientUsesTlsPortForTlsConnection()
+    {
+        $promise = new Promise(function () { });
+        $this->tcp->expects($this->once())->method('connect')->with('tls://localhost:5039')->willReturn($promise);
+
+        $this->factory->createClient('tls://localhost');
+    }
+
     public function testCreateClientUsesTlsConnectorWithTlsLocation()
     {
         $promise = new Promise(function () { });

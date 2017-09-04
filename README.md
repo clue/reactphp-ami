@@ -99,12 +99,12 @@ $factory = new Factory($loop, $connector);
 
 #### createClient()
 
-The `createClient(string $amiUrl): PromiseInterface<Client>` method can be used to create a new [`Client`](#client).
+The `createClient(string $url): PromiseInterface<Client>` method can be used to create a new [`Client`](#client).
 It helps with establishing a plain TCP/IP or secure TLS connection to the AMI
 and optionally issuing an initial `login` action.
 
 ```php
-$factory->createClient($amiUrl)->then(
+$factory->createClient($url)->then(
     function (Client $client) {
         // client connected (and authenticated)
     },
@@ -118,13 +118,14 @@ The method returns a [Promise](https://github.com/reactphp/promise) that will
 resolve with the [`Client`](#client) instance on success or will reject with an
 `Exception` if the URL is invalid or the connection or authentication fails.
 
-The `$amiUrl` contains the host and optional port to connect to:
+The `$url` parameter contains the host and optional port (which defaults to
+`5038` for plain TCP/IP connections) to connect to:
 
 ```php
-$factory->createClient('127.0.0.1:5038');
+$factory->createClient('localhost:5038');
 ```
 
-The above examples to not pass any authentication details, so you may have to
+The above example does not pass any authentication details, so you may have to
 call `ActionSender::login()` after connecting or use the recommended shortcut
 to pass a username and secret for your AMI login details like this:
 
@@ -133,10 +134,11 @@ $factory->createClient('user:secret@localhost');
 ```
 
 The `Factory` defaults to establishing a plaintext TCP connection.
-If you want to connect through a secure TLS proxy, you can use the `tls` scheme:
+If you want to create a secure TLS connection, you can use the `tls` scheme
+(which defaults to port `5039`):
 
 ```php
-$factory->createClient('tls://user:secret@localhost:12345');
+$factory->createClient('tls://user:secret@localhost:5039');
 ```
 
 ### Client
