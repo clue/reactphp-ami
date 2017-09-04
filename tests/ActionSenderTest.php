@@ -1,13 +1,12 @@
 <?php
 
-use Clue\React\Ami\Collector;
-use Clue\React\Ami\Protocol\Collection;
-use Clue\React\Ami\Protocol\Response;
+use Clue\React\Ami\ActionSender;
 use Clue\React\Ami\Client;
-use Clue\React\Ami\Protocol\Event;
 use Clue\React\Ami\Protocol\Action;
+use Clue\React\Ami\Protocol\Event;
+use Clue\React\Ami\Protocol\Response;
 
-class CollectorTest extends TestCase
+class ActionSenderTest extends TestCase
 {
     public function testCollectingSIPEvents()
     {
@@ -19,7 +18,7 @@ class CollectorTest extends TestCase
                  ->with($this->equalTo('SIPPeers'), $this->equalTo(array()))
                  ->will($this->returnValue(new Action(array('Action' => 'SIPPeers', 'ActionID' => '123'))));
 
-        $collector = new Collector($client);
+        $collector = new ActionSender($client);
 
         $promise = $collector->sipPeers();
 
