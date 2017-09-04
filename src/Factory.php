@@ -4,46 +4,39 @@ namespace Clue\React\Ami;
 
 use React\EventLoop\LoopInterface;
 use React\SocketClient\ConnectionInterface;
-use React\SocketClient\ConnectorInterface;
 use React\SocketClient\Connector;
-use React\SocketClient\SecureConnector;
-use React\Dns\Resolver\Factory as ResolverFactory;
+use React\SocketClient\ConnectorInterface;
 use InvalidArgumentException;
 
 class Factory
 {
     private $loop;
     private $connector;
-    private $secureConnector;
 
-    public function __construct(LoopInterface $loop, ConnectorInterface $connector = null, ConnectorInterface $secureConnector = null)
+    public function __construct(LoopInterface $loop, ConnectorInterface $connector = null)
     {
         if ($connector === null) {
-            $resolverFactory = new ResolverFactory();
-            $connector = new Connector($loop, $resolverFactory->create('8.8.8.8', $loop));
-        }
-        if ($secureConnector === null) {
-            $secureConnector = new SecureConnector($connector, $loop);
+            $connector = new Connector($loop);
         }
 
         $this->loop = $loop;
         $this->connector = $connector;
-        $this->secureConnector = $secureConnector;
     }
 
     public function createClient($address = null)
     {
         $parts = $this->parseUrl($address);
 
-        $secure = (isset($parts['scheme']) && $parts['scheme'] !== 'tcp');
-        $connector = $secure ? $this->secureConnector : $this->connector;
+        if (isset($parts['scheme']) && $parts['scheme'] !== 'tcp') {
+            $parts['host'] = 'tls://' . $parts['host'];
+        }
 
-        $promise = $connector->connect($parts['host'] . ':' . $parts['port'])->then(function (ConnectionInterface $stream) {
+        $promise = $this->connector->connect($parts['host'] . ':' . $parts['port'])->then(function (ConnectionInterface $stream) {
             return new Client($stream);
         });
 
         if (isset($parts['user'])) {
-            $promise = $promise->then(function (Client $client) use ($parts, $secure) {
+            $promise = $promise->then(function (Client $client) use ($parts) {
                 $sender = new ActionSender($client);
 
                 return $sender->login($parts['user'], $parts['pass'])->then(

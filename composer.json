@@ -14,7 +14,7 @@
         "php": ">=5.3",
         "evenement/evenement": "~1.0|~2.0",
         "react/promise": "~1.0|~2.0",
-        "react/socket-client": "^0.6",
+        "react/socket-client": "^0.7",
         "react/event-loop": "0.3.*|0.4.*"
     },
     "require-dev": {

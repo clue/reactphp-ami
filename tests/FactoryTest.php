@@ -6,16 +6,14 @@ class FactoryTest extends TestCase
 {
     private $loop;
     private $tcp;
-    private $tls;
     private $factory;
 
     public function setUp()
     {
         $this->loop = $this->getMockBuilder('React\EventLoop\LoopInterface')->getMock();
         $this->tcp = $this->getMockBuilder('React\SocketClient\ConnectorInterface')->getMock();
-        $this->tls = $this->getMockBuilder('React\SocketClient\ConnectorInterface')->getMock();
 
-        $this->factory = new Factory($this->loop, $this->tcp, $this->tls);
+        $this->factory = new Factory($this->loop, $this->tcp);
     }
 
     public function testDefaultCtor()
@@ -42,7 +40,7 @@ class FactoryTest extends TestCase
     public function testCreateClientUsesTlsConnectorWithTlsLocation()
     {
         $promise = new Promise(function () { });
-        $this->tls->expects($this->once())->method('connect')->with('ami.local:1234')->willReturn($promise);
+        $this->tcp->expects($this->once())->method('connect')->with('tls://ami.local:1234')->willReturn($promise);
 
         $this->factory->createClient('tls://ami.local:1234');
     }
