@@ -7,6 +7,7 @@ use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use React\Socket\ConnectorInterface;
 use InvalidArgumentException;
+use React\Promise;
 
 class Factory
 {
@@ -23,15 +24,19 @@ class Factory
         $this->connector = $connector;
     }
 
-    public function createClient($address = null)
+    public function createClient($url)
     {
-        $parts = $this->parseUrl($address);
-
-        if (isset($parts['scheme']) && $parts['scheme'] !== 'tcp') {
-            $parts['host'] = 'tls://' . $parts['host'];
+        $parts = parse_url((strpos($url, '://') === false ? 'tcp://' : '') . $url);
+        if (!$parts || !isset($parts['scheme'], $parts['host'])) {
+            return Promise\reject(new InvalidArgumentException('Given URL "' . $url . '" can not be parsed'));
         }
 
-        $promise = $this->connector->connect($parts['host'] . ':' . $parts['port'])->then(function (ConnectionInterface $stream) {
+        // use default port 5039 for `tls://` or 5038 otherwise
+        if (!isset($parts['port'])) {
+            $parts['port'] = $parts['scheme'] === 'tls' ? 5039 : 5038;
+        }
+
+        $promise = $this->connector->connect($parts['scheme'] . '://' . $parts['host'] . ':' . $parts['port'])->then(function (ConnectionInterface $stream) {
             return new Client($stream);
         });
 
@@ -52,26 +57,5 @@ class Factory
         }
 
         return $promise;
-    }
-
-    private function parseUrl($target)
-    {
-        if ($target === null) {
-            $target = 'tcp://127.0.0.1';
-        }
-        if (strpos($target, '://') === false) {
-            $target = 'tcp://' . $target;
-        }
-
-        $parts = parse_url($target);
-        if ($parts === false || !isset($parts['host'])) {
-            throw new InvalidArgumentException('Given URL can not be parsed');
-        }
-
-        if (!isset($parts['port'])) {
-            $parts['port'] = '5038';
-        }
-
-        return $parts;
     }
 }
