@@ -45,6 +45,6 @@ class ClientTest extends TestCase
 
     private function createStreamMock()
     {
-        return $this->getMockBuilder('React\SocketClient\StreamConnection')->disableOriginalConstructor()->setMethods(array('write', 'close'))->getMock();
+        return $this->getMockBuilder('React\Socket\Connection')->disableOriginalConstructor()->setMethods(array('write', 'close'))->getMock();
     }
 }

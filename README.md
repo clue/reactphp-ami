@@ -91,7 +91,7 @@ $factory = new Factory($loop);
 ```
 
 If you need custom DNS or proxy settings, you can explicitly pass a
-custom instance of the [`ConnectorInterface`](https://github.com/reactphp/socket-client#connectorinterface):
+custom instance of the [`ConnectorInterface`](https://github.com/reactphp/socket#connectorinterface):
 
 ```php
 $factory = new Factory($loop, $connector);

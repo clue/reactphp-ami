@@ -3,9 +3,9 @@
 namespace Clue\React\Ami;
 
 use React\EventLoop\LoopInterface;
-use React\SocketClient\ConnectionInterface;
-use React\SocketClient\Connector;
-use React\SocketClient\ConnectorInterface;
+use React\Socket\ConnectionInterface;
+use React\Socket\Connector;
+use React\Socket\ConnectorInterface;
 use InvalidArgumentException;
 
 class Factory

@@ -10,7 +10,7 @@ use Clue\React\Ami\Protocol\Parser;
 use Clue\React\Ami\Protocol\UnexpectedMessageException;
 use Evenement\EventEmitter;
 use React\Promise\Deferred;
-use React\SocketClient\ConnectionInterface;
+use React\Socket\ConnectionInterface;
 use Exception;
 use UnexpectedValueException;
 
