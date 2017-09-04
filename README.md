@@ -47,6 +47,9 @@ monitor the status of subscribers, channels or queues.
     * [getActionId()](#getactionid)
   * [Response](#response)
     * [getCommandOutput()](#getcommandoutput)
+  * [Collection](#collection)
+    * [getEntryEvents()](#getentryevents)
+    * [getCompleteEvent()](#getcompleteevent)
   * [Action](#action)
   * [Event](#event)
     * [getName()](#getname)
@@ -205,9 +208,8 @@ $sender = new ActionSender($client);
 All public methods resemble their respective AMI actions.
 
 ```php
-$sender->ping()->then(function (Response $response) {
-    // response received for ping action
-});
+$sender->ping();
+// many more…
 ```
 
 Listing all available actions is out of scope here, please refer to the [class outline](src/ActionSender.php).
@@ -247,7 +249,8 @@ A PR that updates the `ActionSender` is very much appreciated :)
 
 ### Message
 
-The `Message` is an abstract base class for the [`Response`](#response), [`Action`](#action) and [`Event`](#event) value objects.
+The `Message` is an abstract base class for the [`Response`](#response),
+[`Action`](#action) and [`Event`](#event) value objects.
 It provides a common interface for these three message types.
 
 Each `Message` consists of any number of fields with each having a name and one or multiple values.
@@ -272,12 +275,12 @@ The `getFields(): array` method can be used to get an array of all fields.
 The `getActionId(): string` method can be used to get the unique action ID of this message.
 This is a shortcut to get the value of the "ActionID" field.
 
-#### Response
+### Response
 
 The `Response` value object represents the incoming response received from the AMI.
 It shares all properties of the [`Message`](#message) parent class.
 
-##### getCommandOutput()
+#### getCommandOutput()
 
 The `getCommandOutput(): ?string` method can be used to get the resulting output of
 a "command" [`Action`](#action).
@@ -290,17 +293,78 @@ $sender->command('help')->then(function (Response $response) {
 });
 ```
 
-#### Action
+### Collection
+
+The `Collection` value object represents an incoming response received from the AMI
+for certain actions that return a list of entries.
+It shares all properties of the [`Response`](#response) parent class.
+
+You can access the `Collection` like a normal `Response` in order to access
+the leading `Response` for this collection or you can use the below methods
+to access the list entries and completion event.
+
+```
+Action: CoreShowChannels
+Response: Success
+EventList: start
+Message: Channels will follow
+
+Event: CoreShowChannel
+Channel: SIP / 123
+ChannelState: 6
+ChannelStateDesc: Up
+…
+
+Event: CoreShowChannel
+Channel: SIP / 456
+ChannelState: 6
+ChannelStateDesc: Up
+…
+
+Event: CoreShowChannel
+Channel: SIP / 789
+ChannelState: 6
+ChannelStateDesc: Up
+…
+
+Event: CoreShowChannelsComplete
+EventList: Complete
+ListItems: 3
+```
+
+#### getEntryEvents()
+
+The `getEntryEvents(): Event[]` method can be used to get the list of all
+intermediary `Event` objects where each entry represents a single entry in the
+collection.
+
+```php
+foreach ($collection->getEntryEvents() as $entry) {
+    /* @var $entry Event */
+    echo $entry->getFieldValue('Channel') . PHP_EOL;
+}
+```
+
+#### getCompleteEvent()
+
+The `getCompleteEvent(): Event` method can be used to get the trailing
+`Event` that completes this collection.
+
+```php
+echo $collection->getCompleteEvent()->getFieldValue('ListItems') . PHP_EOL;
+```
+
+### Action
 
 The `Action` value object represents an outgoing action message to be sent to the AMI.
 It shares all properties of the [`Message`](#message) parent class.
 
-#### Event
+### Event
 
 The `Event` value object represents the incoming event received from the AMI.
 It shares all properties of the [`Message`](#message) parent class.
 
-##### getName()
+#### getName()
 
 The `getName(): ?string` method can be used to get the name of the event.
 This is a shortcut to get the value of the "Event" field.
