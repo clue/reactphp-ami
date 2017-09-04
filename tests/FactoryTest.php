@@ -29,10 +29,10 @@ class FactoryTest extends TestCase
         $this->factory->createClient();
     }
 
-    public function testCreateClientUsesTcpConnectorWithLocalhostLocation()
+    public function testCreateClientUsesDefaultPortForTcpConnection()
     {
         $promise = new Promise(function () { });
-        $this->tcp->expects($this->once())->method('connect')->with('127.0.0.1:5038')->willReturn($promise);
+        $this->tcp->expects($this->once())->method('connect')->with('localhost:5038')->willReturn($promise);
 
         $this->factory->createClient('localhost');
     }

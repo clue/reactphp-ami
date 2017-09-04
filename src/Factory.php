@@ -72,10 +72,6 @@ class Factory
             $parts['port'] = '5038';
         }
 
-        if ($parts['host'] === 'localhost') {
-            $parts['host'] = '127.0.0.1';
-        }
-
         return $parts;
     }
 }
