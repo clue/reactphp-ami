@@ -3,10 +3,10 @@
 namespace Clue\React\Ami;
 
 use Clue\React\Ami\Client;
-use Clue\React\Ami\Protocol\Response;
-use Clue\React\Ami\Protocol\Action;
-use UnexpectedValueException;
+use Clue\React\Ami\Protocol\Collection;
 use Clue\React\Ami\Protocol\Event;
+use Clue\React\Ami\Protocol\Response;
+use React\Promise\Deferred;
 
 class ActionSender
 {
@@ -39,11 +39,6 @@ class ActionSender
         return $this->request('Ping');
     }
 
-    public function coreShowChannels()
-    {
-        return $this->request('CoreShowChannels');
-    }
-
     public function command($command)
     {
         return $this->request('Command', array('Command' => $command));
@@ -60,11 +55,6 @@ class ActionSender
         }
 
         return $this->request('Events', array('EventMask' => $eventMask));
-    }
-
-    public function sipPeers()
-    {
-        return $this->request('SIPPeers');
     }
 
     public function sipShowPeer($peerName)
@@ -97,6 +87,32 @@ class ActionSender
         return $this->request('GetConfig', array('Filename' => $filename, 'Category' => $category));
     }
 
+    /**
+     * @return \React\Promise\PromiseInterface Promise<Collection> collection with "Event: CoreShowChannel"
+     */
+    public function coreShowChannels()
+    {
+        return $this->collectEvents('CoreShowChannels', 'CoreShowChannelsComplete');
+    }
+
+    /**
+     *
+     * @return \React\Promise\PromiseInterface Promise<Collection> collection with "Event: PeerEntry"
+     */
+    public function sipPeers()
+    {
+        return $this->collectEvents('SIPPeers', 'PeerlistComplete');
+    }
+
+    /**
+     *
+     * @return \React\Promise\PromiseInterface Promise<Collection> collection with "Event: Agents"
+     */
+    public function agents()
+    {
+        return $this->collectEvents('Agents', 'AgentsComplete');
+    }
+
     private function boolParam($value)
     {
         if ($value === true) {
@@ -111,5 +127,45 @@ class ActionSender
     private function request($name, array $args = array())
     {
         return $this->client->request($this->client->createAction($name, $args));
+    }
+
+    private function collectEvents($command, $expectedEndEvent)
+    {
+        $req = $this->client->createAction($command);
+        $ret = $this->client->request($req);
+        $id = $req->getActionId();
+
+        $deferred = new Deferred();
+
+        // collect all intermediary channel events with this action ID
+        $collected = array();
+        $collector = function (Event $event) use ($id, &$collected, $deferred, $expectedEndEvent) {
+            if ($event->getActionId() === $id) {
+                $collected []= $event;
+
+                if ($event->getName() === $expectedEndEvent) {
+                    $deferred->resolve($collected);
+                }
+            }
+        };
+        $this->client->on('event', $collector);
+
+        // unregister collector if client fails
+        $client = $this->client;
+        $unregister = function () use ($client, $collector) {
+            $client->removeListener('event', $collector);
+        };
+        $ret->then(null, $unregister);
+
+        // stop waiting for events
+        $deferred->promise()->then($unregister);
+
+        return $ret->then(function (Response $response) use ($deferred) {
+            // final result has been received => merge all intermediary channel events
+            return $deferred->promise()->then(function ($collected) use ($response) {
+                $last = array_pop($collected);
+                return new Collection($response, $collected, $last);
+            });
+        });
     }
 }

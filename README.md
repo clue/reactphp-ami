@@ -208,7 +208,16 @@ $sender = new ActionSender($client);
 All public methods resemble their respective AMI actions.
 
 ```php
+$sender->login($name, $pass);
+$sender->logoff();
 $sender->ping();
+$sender->command($command);
+$sender->events($eventMask);
+
+$sender->coreShowChannels();
+$sender->sipPeers();
+$sender->agents();
+
 // many more…
 ```
 
@@ -238,6 +247,10 @@ $sender->ping()->then(
     }
 });
 ```
+
+All actions resolve with a [`Response`](#response) object on success,
+some actions are documented to return the specialized [`Collection`](#collection)
+object to contain a list of entries.
 
 #### Custom actions
 
@@ -305,6 +318,7 @@ to access the list entries and completion event.
 
 ```
 Action: CoreShowChannels
+
 Response: Success
 EventList: start
 Message: Channels will follow
