@@ -153,4 +153,19 @@ class ParserTest extends TestCase
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals('', $first->getFieldValue('Response'));
     }
+
+    public function testParsingEmptyLine()
+    {
+        $parser = new Parser();
+        $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
+        //Ignore empty line
+        $ret = $parser->push("\r\nResponse: Success\r\n\r\n");
+        $this->assertCount(1, $ret);
+
+        $first = reset($ret);
+        /* @var $first Clue\React\Ami\Protocol\Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
+        $this->assertEquals('Success', $first->getFieldValue('Response'));
+    }
 }

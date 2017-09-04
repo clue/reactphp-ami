@@ -2,7 +2,6 @@
 
 namespace Clue\React\Ami\Protocol;
 
-use Clue\Hexdump\Hexdump;
 class Parser
 {
     const EOM = "\r\n\r\n";
@@ -45,27 +44,29 @@ class Parser
         $fields = array();
 
         foreach ($lines as $i => $line) {
-            $pos = strlen($line) - self::LCOMMAND_END - 1;
-            if ($i === $last && substr($line, -self::LCOMMAND_END) === self::COMMAND_END && ($pos < 0 || $line[$pos] === "\n")) {
-                $key = Response::FIELD_COMMAND_OUTPUT;
-                $value = $line;
-            } else {
-                $pos = strpos($line, ':');
-                if ($pos === false) {
-                    throw new \UnexpectedValueException('Parse error, no colon in line "' . $line . '" found');
+            if(!empty($line)) {
+                $pos = strlen($line) - self::LCOMMAND_END - 1;
+                if ($i === $last && substr($line, -self::LCOMMAND_END) === self::COMMAND_END && ($pos < 0 || $line[$pos] === "\n")) {
+                    $key = Response::FIELD_COMMAND_OUTPUT;
+                    $value = $line;
+                } else {
+                    $pos = strpos($line, ':');
+                    if ($pos === false) {
+                        throw new \UnexpectedValueException('Parse error, no colon in line "' . $line . '" found');
+                    }
+
+                    $value = (string)substr($line, $pos + (isset($line[$pos + 1]) && $line[$pos + 1] === ' ' ? 2 : 1));
+                    $key = substr($line, 0, $pos);
                 }
 
-                $value = (string)substr($line, $pos + (isset($line[$pos + 1]) && $line[$pos + 1] === ' ' ? 2 : 1));
-                $key = substr($line, 0, $pos);
-            }
-
-            if (isset($fields[$key])) {
-                if (!is_array($fields[$key])) {
-                    $fields[$key] = array($fields[$key]);
+                if (isset($fields[$key])) {
+                    if (!is_array($fields[$key])) {
+                        $fields[$key] = array($fields[$key]);
+                    }
+                    $fields[$key][] = $value;
+                } else {
+                    $fields[$key] = $value;
                 }
-                $fields[$key][] = $value;
-            } else {
-                $fields[$key] = $value;
             }
         }
 
