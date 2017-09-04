@@ -12,12 +12,13 @@
     ],
     "require": {
         "php": ">=5.3",
-        "evenement/evenement": "~1.0|~2.0",
-        "react/promise": "~1.0|~2.0",
-        "react/socket": "^0.7",
-        "react/event-loop": "0.3.*|0.4.*"
+        "evenement/evenement": "^3.0 || ^2.0 || ^1.0",
+        "react/event-loop": "^1.0 || ^0.5 || ^0.4 || ^0.3",
+        "react/promise": "^2.0 || ^1.0",
+        "react/socket": "^1.0 || ^0.8 || ^0.7"
     },
     "require-dev": {
+        "clue/block-react": "^1.2",
         "phpunit/phpunit": "^5.0 || ^4.8"
     },
     "autoload": {
