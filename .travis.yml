@@ -1,18 +1,21 @@
 language: php
 
 php:
-  - 5.3
+# - 5.3 # requires old distro, see below
   - 5.4
   - 5.5
   - 5.6
   - 7.0
   - 7.1
+  - hhvm # ignore errors, see below
 
-# also test against HHVM, but require "trusty" and ignore errors
+# lock distro so new future defaults will not break the build
+dist: trusty
+
 matrix:
   include:
-    - php: hhvm
-      dist: trusty
+    - php: 5.3
+      dist: precise
   allow_failures:
     - php: hhvm
 
@@ -23,7 +26,7 @@ install:
   - sudo apt-get -qq update && sudo apt-get --no-install-recommends -qq install -y asterisk
   - sudo cp tests/username.conf /etc/asterisk/manager.d/username.conf
   - sudo /etc/init.d/asterisk reload
-  - composer install --prefer-source --no-interaction
+  - composer install --no-interaction
 
 script:
   - sudo /etc/init.d/asterisk status || sudo /etc/init.d/asterisk start
