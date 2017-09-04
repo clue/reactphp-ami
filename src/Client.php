@@ -5,6 +5,7 @@ namespace Clue\React\Ami;
 use Clue\React\Ami\Protocol\Event;
 use Clue\React\Ami\Protocol\Action;
 use Evenement\EventEmitter;
+use React\EventLoop\LoopInterface;
 use React\Stream\Stream;
 use Clue\React\Ami\Protocol\Parser;
 use React\Promise\Deferred;
@@ -133,5 +134,12 @@ class Client extends EventEmitter
         $args = array('Action' => $name, 'ActionID' => (string)++$this->actionId) + $args;
 
         return new Action($args);
+    }
+
+    public function keepAlive(LoopInterface $loop, $interval = 75)
+    {
+        $loop->addPeriodicTimer($interval, function(){
+            $this->request($this->createAction('Ping'));
+        });
     }
 }
