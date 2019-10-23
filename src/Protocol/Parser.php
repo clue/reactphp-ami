@@ -40,7 +40,7 @@ class Parser
 
     private function parseMessage($message)
     {
-        $lines = explode(self::EOL, $message);
+        $lines = array_filter(explode(self::EOL, $message));
         $last  = count($lines) - 1;
         $fields = array();
 
