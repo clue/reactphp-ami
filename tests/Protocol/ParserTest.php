@@ -156,4 +156,19 @@ class ParserTest extends TestCase
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals('', $first->getFieldValue('Response'));
     }
+
+    public function testParsingExcessiveNewlines()
+    {
+        $parser = new Parser();
+        $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
+
+        $ret = $parser->push("First: 1\r\n\r\nSecond: 2\r\n\r\n\r\nThird: 3\r\n\r\n\r\n\r\nFourth: 4\r\n\r\n");
+        $this->assertCount(4, $ret);
+
+        $last = $ret[count($ret) - 1];
+        /* @var $last \Clue\React\Ami\Protocol\Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $last);
+        $this->assertEquals('4', $last->getFieldValue('Fourth'));
+    }
 }
