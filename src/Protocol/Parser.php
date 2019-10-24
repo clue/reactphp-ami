@@ -32,7 +32,10 @@ class Parser
             $message = substr($this->buffer, 0, $pos);
             $this->buffer = (string)substr($this->buffer, $pos + self::LEOM);
 
-            $messages []= $this->parseMessage($message);
+            $parsed = $this->parseMessage($message);
+            if (!empty($parsed->getFields())) {
+                $messages []= $parsed;
+            }
         }
 
         return $messages;
