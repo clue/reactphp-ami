@@ -2,7 +2,6 @@
 
 namespace Clue\React\Ami\Protocol;
 
-use Clue\Hexdump\Hexdump;
 class Parser
 {
     const EOM = "\r\n\r\n";
