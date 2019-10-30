@@ -1,6 +1,9 @@
 <?php
 
+namespace Clue\Tests\React\Ami\Protocol;
+
 use Clue\React\Ami\Protocol\Action;
+use Clue\Tests\React\Ami\TestCase;
 
 class ActionTest extends TestCase
 {

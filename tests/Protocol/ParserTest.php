@@ -1,6 +1,9 @@
 <?php
 
+namespace Clue\Tests\React\Ami\Protocol;
+
 use Clue\React\Ami\Protocol\Parser;
+use Clue\Tests\React\Ami\TestCase;
 
 class ParserTest extends TestCase
 {
@@ -13,7 +16,7 @@ class ParserTest extends TestCase
         $this->assertCount(1, $ret);
 
         $first = reset($ret);
-        /* @var $first Clue\React\Ami\Protocol\Response */
+        /* @var $first \Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals('Success', $first->getFieldValue('Response'));
@@ -28,7 +31,7 @@ class ParserTest extends TestCase
         $this->assertCount(1, $ret);
 
         $first = reset($ret);
-        /* @var $first Clue\React\Ami\Protocol\Response */
+        /* @var $first \Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals(' spaces  ', $first->getFieldValue('Message'));
@@ -43,7 +46,7 @@ class ParserTest extends TestCase
         $this->assertCount(2, $ret);
 
         $first = reset($ret);
-        /* @var $first Clue\React\Ami\Protocol\Event */
+        /* @var $first \Clue\React\Ami\Protocol\Event */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Event', $first);
         $this->assertEquals('TestA', $first->getName());
@@ -58,7 +61,7 @@ class ParserTest extends TestCase
         $this->assertCount(1, $ret);
 
         $first = reset($ret);
-        /* @var $first Clue\React\Ami\Protocol\Response */
+        /* @var $first \Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals('one', $first->getFieldValue('Message'));
@@ -74,7 +77,7 @@ class ParserTest extends TestCase
         $this->assertCount(1, $ret);
 
         $first = reset($ret);
-        /* @var $first Clue\React\Ami\Protocol\Response */
+        /* @var $first \Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals('Follows', $first->getFieldValue('Response'));
@@ -90,7 +93,7 @@ class ParserTest extends TestCase
         $this->assertCount(1, $ret);
 
         $first = reset($ret);
-        /* @var $first Clue\React\Ami\Protocol\Response */
+        /* @var $first \Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals('Follows', $first->getFieldValue('Response'));
@@ -106,7 +109,7 @@ class ParserTest extends TestCase
         $this->assertCount(1, $ret);
 
         $first = reset($ret);
-        /* @var $first Clue\React\Ami\Protocol\Response */
+        /* @var $first \Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals('Success', $first->getFieldValue('Response'));
@@ -133,7 +136,7 @@ class ParserTest extends TestCase
         $this->assertCount(1, $ret);
 
         $first = reset($ret);
-        /* @var $first Clue\React\Ami\Protocol\Response */
+        /* @var $first \Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals('NoSpace', $first->getFieldValue('Response'));
@@ -148,7 +151,7 @@ class ParserTest extends TestCase
         $this->assertCount(1, $ret);
 
         $first = reset($ret);
-        /* @var $first Clue\React\Ami\Protocol\Response */
+        /* @var $first \Clue\React\Ami\Protocol\Response */
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
         $this->assertEquals('', $first->getFieldValue('Response'));

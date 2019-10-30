@@ -1,5 +1,7 @@
 <?php
 
+namespace Clue\Tests\React\Ami;
+
 use Clue\React\Ami\Factory;
 use React\Promise\Promise;
 
@@ -17,6 +19,9 @@ class FactoryTest extends TestCase
         $this->factory = new Factory($this->loop, $this->tcp);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testDefaultCtor()
     {
         $this->factory = new Factory($this->loop);
