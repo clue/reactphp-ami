@@ -1,8 +1,8 @@
 {
     "name": "clue/ami-react",
-    "description": "Streaming, event-driven access to the Asterisk Manager Interface (AMI), built on top of ReactPHP",
+    "description": "Streaming, event-driven access to the Asterisk Manager Interface (AMI), built on top of ReactPHP.",
     "keywords": ["Asterisk Manager Interface", "AMI", "async", "ReactPHP"],
-    "homepage": "https://github.com/clue/php-ami-react",
+    "homepage": "https://github.com/clue/reactphp-ami",
     "license": "MIT",
     "authors": [
         {
