@@ -1,5 +1,7 @@
 <?php
 
+namespace Clue\Tests\React\Ami;
+
 use Clue\React\Ami\Factory;
 use Clue\React\Ami\Client;
 use Clue\React\Ami\ActionSender;
@@ -14,7 +16,7 @@ class FunctionalTest extends TestCase
     public static function setUpBeforeClass()
     {
         self::$address = getenv('LOGIN');
-        self::$loop = React\EventLoop\Factory::create();
+        self::$loop = \React\EventLoop\Factory::create();
     }
 
     public function setUp()
@@ -45,7 +47,8 @@ class FunctionalTest extends TestCase
         $sender = new ActionSender($client);
 
         $pong = $this->waitFor($sender->ping());
-        /* @var $pong Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $pong);
     }
 
     /**
@@ -67,7 +70,8 @@ class FunctionalTest extends TestCase
         $sender = new ActionSender($client);
 
         $ret = $this->waitFor($sender->logoff());
-        /* @var $ret Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $ret);
 
         $this->assertFalse($client->isBusy());
 

@@ -7,7 +7,8 @@ php:
   - 5.6
   - 7.0
   - 7.1
-  - hhvm # ignore errors, see below
+  - 7.2
+  - 7.3
 
 # lock distro so new future defaults will not break the build
 dist: trusty
@@ -16,14 +17,13 @@ matrix:
   include:
     - php: 5.3
       dist: precise
-  allow_failures:
-    - php: hhvm
 
 env:
   - LOGIN=username:password@localhost
 
 install:
-  - sudo apt-get -qq update && sudo apt-get --no-install-recommends -qq install -y asterisk
+  - sudo apt-get -qq update || true # update package list and ignore temporary network errors
+  - sudo apt-get --no-install-recommends -qq install -y asterisk
   - sudo cp tests/username.conf /etc/asterisk/manager.d/username.conf
   - sudo /etc/init.d/asterisk reload
   - composer install --no-interaction

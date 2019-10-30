@@ -1,9 +1,9 @@
 <?php
 
-use React\Stream\Stream;
-use Clue\React\Ami\Protocol\Parser;
+namespace Clue\Tests\React\Ami;
+
 use Clue\React\Ami\Client;
-use React\EventLoop\Factory;
+use Clue\React\Ami\Protocol\Parser;
 use Clue\React\Ami\Protocol\Response;
 
 class ClientTest extends TestCase

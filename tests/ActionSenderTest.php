@@ -1,7 +1,8 @@
 <?php
 
+namespace Clue\Tests\React\Ami;
+
 use Clue\React\Ami\ActionSender;
-use Clue\React\Ami\Client;
 use Clue\React\Ami\Protocol\Action;
 use Clue\React\Ami\Protocol\Event;
 use Clue\React\Ami\Protocol\Response;

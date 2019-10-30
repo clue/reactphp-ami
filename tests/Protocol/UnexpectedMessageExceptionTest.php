@@ -1,7 +1,10 @@
 <?php
 
+namespace Clue\Tests\React\Ami\Protocol;
+
 use Clue\React\Ami\Protocol\Response;
 use Clue\React\Ami\Protocol\UnexpectedMessageException;
+use Clue\Tests\React\Ami\TestCase;
 
 class UnexpectedMessageExceptionTest extends TestCase
 {
