@@ -22,7 +22,8 @@ env:
   - LOGIN=username:password@localhost
 
 install:
-  - sudo apt-get -qq update && sudo apt-get --no-install-recommends -qq install -y asterisk
+  - sudo apt-get -qq update || true # update package list and ignore temporary network errors
+  - sudo apt-get --no-install-recommends -qq install -y asterisk
   - sudo cp tests/username.conf /etc/asterisk/manager.d/username.conf
   - sudo /etc/init.d/asterisk reload
   - composer install --no-interaction
