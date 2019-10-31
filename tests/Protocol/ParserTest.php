@@ -68,7 +68,23 @@ class ParserTest extends TestCase
         $this->assertEquals(array('one', 'two'), $first->getFieldValues('Message'));
     }
 
-    public function testParsingCommandResponse()
+    public function testParsingAsterisk14CommandResponse()
+    {
+        $parser = new Parser();
+        $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
+
+        $ret = $parser->push("Response: Follows\r\nOutput: Testing: yes\r\nOutput: Another Line\r\n\r\n");
+        $this->assertCount(1, $ret);
+
+        $first = reset($ret);
+        /* @var $first \Clue\React\Ami\Protocol\Response */
+
+        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $first);
+        $this->assertEquals('Follows', $first->getFieldValue('Response'));
+        $this->assertEquals("Testing: yes\nAnother Line", $first->getCommandOutput());
+    }
+
+    public function testParsingLegacyCommandResponse()
     {
         $parser = new Parser();
         $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
@@ -84,7 +100,7 @@ class ParserTest extends TestCase
         $this->assertEquals("Testing: yes\nAnother Line\n--END COMMAND--", $first->getCommandOutput());
     }
 
-    public function testParsingCommandResponseEmpty()
+    public function testParsingLegacyCommandResponseEmpty()
     {
         $parser = new Parser();
         $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
