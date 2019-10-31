@@ -28,32 +28,35 @@ monitor the status of subscribers, channels or queues.
 
 * [Quickstart example](#quickstart-example)
 * [Usage](#usage)
-  * [Factory](#factory)
-    * [createClient)](#createclient)
-  * [Client](#client)
-    * [on()](#on)
-    * [close()](#close)
-    * [end()](#end)
-    * [Advanced](#advanced)
-      * [createAction()](#createaction)
-      * [request()](#request)
-  * [ActionSender](#actionsender)
-    * [Actions](#actions)
-    * [Processing](#processing)
-    * [Custom actions](#custom-actions)
-  * [Message](#message)
-    * [getFieldValue()](#getfieldvalue)
-    * [getFieldValues()](#getfieldvalues)
-    * [getFields()](#getfields)
-    * [getActionId()](#getactionid)
-  * [Response](#response)
-    * [getCommandOutput()](#getcommandoutput)
-  * [Collection](#collection)
-    * [getEntryEvents()](#getentryevents)
-    * [getCompleteEvent()](#getcompleteevent)
-  * [Action](#action)
-  * [Event](#event)
-    * [getName()](#getname)
+    * [Factory](#factory)
+        * [createClient()](#createclient)
+    * [Client](#client)
+        * [close()](#close)
+        * [end()](#end)
+        * [createAction()](#createaction)
+        * [request()](#request)
+        * [event event](#event-event)
+        * [error event](#error-event)
+        * [close event](#close-event)
+    * [ActionSender](#actionsender)
+        * [Actions](#actions)
+        * [Promises](#promises)
+        * [Blocking](#blocking)
+    * [Message](#message)
+        * [getFieldValue()](#getfieldvalue)
+        * [getFieldValues()](#getfieldvalues)
+        * [getFieldVariables()](#getfieldvariables)
+        * [getFields()](#getfields)
+        * [getActionId()](#getactionid)
+    * [Response](#response)
+        * [getCommandOutput()](#getcommandoutput)
+    * [Collection](#collection)
+        * [getEntryEvents()](#getentryevents)
+        * [getCompleteEvent()](#getcompleteevent)
+    * [Action](#action)
+        * [getMessageSerialized()](#getmessageserialized)
+    * [Event](#event)
+        * [getName()](#getname)
 * [Install](#install)
 * [Tests](#tests)
 * [License](#license)
@@ -65,13 +68,13 @@ Asterisk Telephony instance and issue some simple commands via AMI:
 
 ```php
 $loop = React\EventLoop\Factory::create();
-$factory = new Factory($loop);
+$factory = new Clue\React\Ami\Factory($loop);
 
-$factory->createClient('user:secret@localhost')->then(function (Client $client) {
+$factory->createClient('user:secret@localhost')->then(function (Clue\React\Ami\Client $client) {
     echo 'Client connected' . PHP_EOL;
     
-    $sender = new ActionSender($client);
-    $sender->listCommands()->then(function (Response $response) {
+    $sender = new Clue\React\Ami\ActionSender($client);
+    $sender->listCommands()->then(function (Clue\React\Ami\Protocol\Response $response) {
         echo 'Available commands:' . PHP_EOL;
         var_dump($response);
     });
@@ -90,26 +93,39 @@ The `Factory` is responsible for creating your [`Client`](#client) instance.
 It also registers everything with the main [`EventLoop`](https://github.com/reactphp/event-loop#usage).
 
 ```php
-$loop = \React\EventLoop\Factory::create();
-$factory = new Factory($loop);
+$loop = React\EventLoop\Factory::create();
+$factory = new Clue\React\Ami\Factory($loop);
 ```
 
-If you need custom DNS or proxy settings, you can explicitly pass a
-custom instance of the [`ConnectorInterface`](https://github.com/reactphp/socket#connectorinterface):
+If you need custom connector settings (DNS resolution, TLS parameters, timeouts,
+proxy servers etc.), you can explicitly pass a custom instance of the
+[`ConnectorInterface`](https://github.com/reactphp/socket#connectorinterface):
 
 ```php
-$factory = new Factory($loop, $connector);
+$connector = new React\Socket\Connector($loop, array(
+    'dns' => '127.0.0.1',
+    'tcp' => array(
+        'bindto' => '192.168.10.1:0'
+    ),
+    'tls' => array(
+        'verify_peer' => false,
+        'verify_peer_name' => false
+    )
+));
+
+$factory = new Clue\React\Ami\Factory($loop, $connector);
 ```
 
 #### createClient()
 
-The `createClient(string $url): PromiseInterface<Client>` method can be used to create a new [`Client`](#client).
+The `createClient(string $url): PromiseInterface<Client,Exception>` method can be used to
+create a new [`Client`](#client).
 It helps with establishing a plain TCP/IP or secure TLS connection to the AMI
 and optionally issuing an initial `login` action.
 
 ```php
 $factory->createClient($url)->then(
-    function (Client $client) {
+    function (Clue\React\Ami\Client $client) {
         // client connected (and authenticated)
     },
     function (Exception $e) {
@@ -152,48 +168,108 @@ and keeps track of pending actions.
 
 If you want to send outgoing actions, see below for the [`ActionSender`](#actionsender) class.
 
-#### on()
-
-The `on(string $eventName, callable $eventHandler): void` method can be used to register a new event handler.
-Incoming events and errors will be forwarded to registered event handler callbacks:
-
-```php
-$client->on('event', function (Event $event) {
-    // process an incoming AMI event (see below)
-});
-$client->on('close', function () {
-    // the connection to the AMI just closed
-});
-$client->on('error', function (Exception $e) {
-    // and error has just been detected, the connection will terminate...
-});
-```
+Besides defining a few methods, this interface also implements the
+`EventEmitterInterface` which allows you to react to certain events as documented below.
 
 #### close()
 
-The `close(): void` method can be used to force-close the AMI connection and reject all pending actions.
+The `close(): void` method can be used to
+force-close the AMI connection and reject all pending actions.
 
 #### end()
 
-The `end(): void` method can be used to soft-close the AMI connection once all pending actions are completed.
+The `end(): void` method can be used to
+soft-close the AMI connection once all pending actions are completed.
 
-#### Advanced
+#### createAction()
 
-Creating [`Action`](#action) objects, sending them via AMI and waiting for incoming
-[`Response`](#response) objects is usually hidden behind the [`ActionSender`](#actionsender) interface.
+The `createAction(string $name, array $fields): Action` method can be used to
+construct a custom AMI action.
 
-If you happen to need a custom or otherwise unsupported action, you can also do so manually
-as follows. Consider filing a PR though :)
+This method is considered advanced usage and mostly used internally only.
+Creating [`Action`](#action) objects, sending them via AMI and waiting
+for incoming [`Response`](#response) objects is usually hidden behind the
+[`ActionSender`](#actionsender) interface.
 
-##### createAction()
+If you happen to need a custom or otherwise unsupported action, you can
+also do so manually as follows. Consider filing a PR to add new actions
+to the [`ActionSender`](#actionsender).
 
-The `createAction(string $name, array $fields): Action` method can be used to construct a custom AMI action.
-A unique value will be added to "ActionID" field automatically (needed to match incoming responses).
+A unique value will be added to "ActionID" field automatically (needed to
+match the incoming responses).
 
-##### request()
+```php
+$action = $client->createAction('Originate', array('Channel' => …));
+$promise = $client->request($action);
+```
 
-The `request(Action $action): PromiseInterface<Response>` method can be used to queue the given messages to be sent via AMI
+#### request() 
+
+The `request(Action $action): PromiseInterface<Response,Exception>` method can be used to
+queue the given messages to be sent via AMI
 and wait for a [`Response`](#response) object that matches the value of its "ActionID" field.
+
+This method is considered advanced usage and mostly used internally only.
+Creating [`Action`](#action) objects, sending them via AMI and waiting
+for incoming [`Response`](#response) objects is usually hidden behind the
+[`ActionSender`](#actionsender) interface.
+
+If you happen to need a custom or otherwise unsupported action, you can
+also do so manually as follows. Consider filing a PR to add new actions
+to the [`ActionSender`](#actionsender).
+
+```php
+$action = $client->createAction('Originate', array('Channel' => …));
+$promise = $client->request($action);
+```
+
+#### event event
+
+The `event` event (*what a lovely name*) will be emitted whenever AMI sends an event, such as
+a phone call that just started or ended and much more.
+The event receives a single [`Event`](#event) argument describing the event instance.
+
+```php
+$client->on('event', function (Clue\React\Ami\Protocol\Event $event) {
+    // process an incoming AMI event (see below)
+    var_dump($event->getName(), $event);
+});
+```
+
+Event reporting can be turned on/off via AMI configuration and the [`events()` action](#actions).
+The [`events()` action](#actions) can also be used to enable an "EventMask" to
+only report certain events as per the [AMI documentation](https://wiki.asterisk.org/wiki/display/AST/Asterisk+14+ManagerAction_Events).
+
+See also [AMI Events documentation](https://wiki.asterisk.org/wiki/display/AST/Asterisk+14+AMI+Events)
+for more details about event types and their respective fields.
+
+#### error event
+
+The `error` event will be emitted once a fatal error occurs, such as
+when the client connection is lost or is invalid.
+The event receives a single `Exception` argument for the error instance.
+
+```php
+$client->on('error', function (Exception $e) {
+    echo 'Error: ' . $e->getMessage() . PHP_EOL;
+});
+```
+
+This event will only be triggered for fatal errors and will be followed
+by closing the client connection. It is not to be confused with "soft"
+errors caused by invalid commands.
+
+#### close event
+
+The `close` event will be emitted once the client connection closes (terminates).
+
+```php
+$client->on('close', function () {
+    echo 'Connection closed' . PHP_EOL;
+});
+```
+
+See also the [`close()`](#close) method.
 
 ### ActionSender
 
@@ -201,7 +277,7 @@ The `ActionSender` wraps a given [`Client`](#client) instance to provide a simpl
 This class represents the main interface to execute actions and wait for the corresponding responses.
 
 ```php
-$sender = new ActionSender($client);
+$sender = new Clue\React\Ami\ActionSender($client);
 ```
 
 #### Actions
@@ -224,22 +300,28 @@ $sender->agents();
 
 Listing all available actions is out of scope here, please refer to the [class outline](src/ActionSender.php).
 
-#### Processing
+Note that using the `ActionSender` is not strictly necessary, but is the recommended way to execute common actions.
+
+If you happen to need a custom or otherwise unsupported action, you can
+also do so manually. See the advanced [`createAction()`](#createaction) usage above for details.
+Consider filing a PR to add new actions to the `ActionSender`.
+
+#### Promises
 
 Sending actions is async (non-blocking), so you can actually send multiple action requests in parallel.
 The AMI will respond to each action with a [`Response`](#response) object. The order is not guaranteed.
-Sending actions uses a [Promise](https://github.com/reactphp/promise)-based interface that makes it easy to react to when an action is *fulfilled*
-(i.e. either successfully resolved or rejected with an error):
+Sending actions uses a [Promise](https://github.com/reactphp/promise)-based interface that makes it easy to react to when an action is completed
+(i.e. either successfully fulfilled or rejected with an error):
 
 ```php
 $sender->ping()->then(
-    function (Response $response) {
+    function (Clue\React\Ami\Protocol\Response $response) {
         // response received for ping action
     },
     function (Exception $e) {
         // an error occured while executing the action
         
-        if ($e instanceof ErrorException) {
+        if ($e instanceof Clue\React\Ami\Protocol\ErrorException) {
             // we received a valid error response (such as authorization error)
             $response = $e->getResponse();
         } else {
@@ -253,13 +335,38 @@ All actions resolve with a [`Response`](#response) object on success,
 some actions are documented to return the specialized [`Collection`](#collection)
 object to contain a list of entries.
 
-#### Custom actions
+#### Blocking
 
-Using the `ActionSender` is not strictly necessary, but is the recommended way to execute common actions.
+As stated above, this library provides you a powerful, async API by default.
 
-If you happen to need a new or otherwise unsupported action, or additional arguments,
-you can also do so manually. See the advanced [`Client`](#client) usage above for details.
-A PR that updates the `ActionSender` is very much appreciated :)
+If, however, you want to integrate this into your traditional, blocking environment,
+you should look into also using [clue/block-react](https://github.com/clue/php-block-react).
+
+The resulting blocking code could look something like this:
+
+```php
+use Clue\React\Block;
+
+function getSipPeers()
+{
+    $loop = React\EventLoop\Factory::create();
+    $factory = new Clue\React\Ami\Factory($loop);
+
+    $target = 'name:password@localhost';
+    $promise = $factory->createClient($target)->then(function (Clue\React\Ami\Client $client) {
+        $sender = new Clue\React\Ami\ActionSender($client);
+        $ret = $sender->sipPeers()->then(function (Clue\React\Ami\Collection $collection) {
+            return $collection->getEntryEvents();
+        });
+        $client->end();
+        return $ret;
+    });
+
+    return Block\await($promise, $loop, 5.0);
+}
+```
+
+Refer to [clue/block-react](https://github.com/clue/php-block-react#readme) for more details.
 
 ### Message
 
@@ -268,25 +375,39 @@ The `Message` is an abstract base class for the [`Response`](#response),
 It provides a common interface for these three message types.
 
 Each `Message` consists of any number of fields with each having a name and one or multiple values.
-Field names are matched case-insensitive. The interpretation of values is application specific.
+Field names are matched case-insensitive. The interpretation of values is application-specific.
 
 #### getFieldValue()
 
-The `getFieldValue(string $key): ?string` method can be used to get the first value for the given field key.
+The `getFieldValue(string $key): ?string` method can be used to
+get the first value for the given field key.
+
 If no value was found, `null` is returned.
 
 #### getFieldValues()
 
-The `getFieldValues(string $key): string[]` method can be used to get a list of all values for the given field key.
+The `getFieldValues(string $key): string[]` method can be used to
+get a list of all values for the given field key.
+
+If no value was found, an empty `array()` is returned.
+
+#### getFieldVariables()
+
+The `getFieldVariables(string $key): array` method can be used to
+get a hashmap of all variable assignments in the given $key.
+
 If no value was found, an empty `array()` is returned.
 
 #### getFields()
 
-The `getFields(): array` method can be used to get an array of all fields.
+The `getFields(): array` method can be used to
+get an array of all fields.
 
 #### getActionId()
 
-The `getActionId(): string` method can be used to get the unique action ID of this message.
+The `getActionId(): string` method can be used to
+get the unique action ID of this message.
+
 This is a shortcut to get the value of the "ActionID" field.
 
 ### Response
@@ -302,7 +423,7 @@ This value is only available if this is actually a response to a "command" actio
 otherwise it defaults to `null`.
 
 ```php
-$sender->command('help')->then(function (Response $response) {
+$sender->command('help')->then(function (Clue\React\Ami\Protocol\Response $response) {
     echo $response->getCommandOutput();
 });
 ```
@@ -349,21 +470,20 @@ ListItems: 3
 
 #### getEntryEvents()
 
-The `getEntryEvents(): Event[]` method can be used to get the list of all
-intermediary `Event` objects where each entry represents a single entry in the
-collection.
+The `getEntryEvents(): Event[]` method can be used to
+get the list of all intermediary `Event` objects where each entry represents a single entry in the collection.
 
 ```php
 foreach ($collection->getEntryEvents() as $entry) {
-    /* @var $entry Event */
+    assert($entry instanceof Clue\React\Ami\Protocol\Event);
     echo $entry->getFieldValue('Channel') . PHP_EOL;
 }
 ```
 
 #### getCompleteEvent()
 
-The `getCompleteEvent(): Event` method can be used to get the trailing
-`Event` that completes this collection.
+The `getCompleteEvent(): Event` method can be used to
+get the trailing `Event` that completes this collection.
 
 ```php
 echo $collection->getCompleteEvent()->getFieldValue('ListItems') . PHP_EOL;
@@ -374,6 +494,13 @@ echo $collection->getCompleteEvent()->getFieldValue('ListItems') . PHP_EOL;
 The `Action` value object represents an outgoing action message to be sent to the AMI.
 It shares all properties of the [`Message`](#message) parent class.
 
+#### getMessageSerialized()
+
+The `getMessageSerialized(): string` method can be used to
+get the serialized version of this outgoing action to send to Asterisk.
+
+This method is considered advanced usage and mostly used internally only.
+
 ### Event
 
 The `Event` value object represents the incoming event received from the AMI.
@@ -382,6 +509,7 @@ It shares all properties of the [`Message`](#message) parent class.
 #### getName()
 
 The `getName(): ?string` method can be used to get the name of the event.
+
 This is a shortcut to get the value of the "Event" field.
 
 ## Install

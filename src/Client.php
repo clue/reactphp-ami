@@ -14,6 +14,15 @@ use React\Socket\ConnectionInterface;
 use Exception;
 use UnexpectedValueException;
 
+/**
+ * The `Client` is responsible for exchanging messages with the Asterisk Manager Interface
+ * and keeps track of pending actions.
+ *
+ * If you want to send outgoing actions, see below for the [`ActionSender`](#actionsender) class.
+ *
+ * Besides defining a few methods, this interface also implements the
+ * `EventEmitterInterface` which allows you to react to certain events as documented below.
+ */
 class Client extends EventEmitter
 {
     private $stream;
@@ -49,6 +58,27 @@ class Client extends EventEmitter
         $this->stream->on('close', array ($that, 'close'));
     }
 
+    /**
+     * Queue the given messages to be sent via AMI
+     * and wait for a [`Response`](#response) object that matches the value of its "ActionID" field.
+     *
+     * This method is considered advanced usage and mostly used internally only.
+     * Creating [`Action`](#action) objects, sending them via AMI and waiting
+     * for incoming [`Response`](#response) objects is usually hidden behind the
+     * [`ActionSender`](#actionsender) interface.
+     *
+     * If you happen to need a custom or otherwise unsupported action, you can
+     * also do so manually as follows. Consider filing a PR to add new actions
+     * to the [`ActionSender`](#actionsender).
+     *
+     * ```php
+     * $action = $client->createAction('Originate', array('Channel' => …));
+     * $promise = $client->request($action);
+     * ```
+     *
+     * @param Action $message
+     * @return \React\Promise\PromiseInterface<Response,\Exception>
+     */
     public function request(Action $message)
     {
         $deferred = new Deferred();
@@ -91,6 +121,11 @@ class Client extends EventEmitter
         }
     }
 
+    /**
+     * Force-close the AMI connection and reject all pending actions.
+     *
+     * @return void
+     */
     public function close()
     {
         if ($this->stream === null) {
@@ -112,6 +147,11 @@ class Client extends EventEmitter
         $this->pending = array();
     }
 
+    /**
+     * Soft-close the AMI connection once all pending actions are completed.
+     *
+     * @return void
+     */
     public function end()
     {
         $this->ending = true;
@@ -126,6 +166,30 @@ class Client extends EventEmitter
         return !!$this->pending;
     }
 
+    /**
+     * Construct a custom AMI action.
+     *
+     * This method is considered advanced usage and mostly used internally only.
+     * Creating [`Action`](#action) objects, sending them via AMI and waiting
+     * for incoming [`Response`](#response) objects is usually hidden behind the
+     * [`ActionSender`](#actionsender) interface.
+     *
+     * If you happen to need a custom or otherwise unsupported action, you can
+     * also do so manually as follows. Consider filing a PR to add new actions
+     * to the [`ActionSender`](#actionsender).
+     *
+     * A unique value will be added to "ActionID" field automatically (needed to
+     * match the incoming responses).
+     *
+     * ```php
+     * $action = $client->createAction('Originate', array('Channel' => …));
+     * $promise = $client->request($action);
+     * ```
+     *
+     * @param string $name
+     * @param array $args
+     * @return Action
+     */
     public function createAction($name, array $args = array())
     {
         $args = array('Action' => $name, 'ActionID' => (string)++$this->actionId) + $args;

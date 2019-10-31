@@ -2,6 +2,10 @@
 
 namespace Clue\React\Ami\Protocol;
 
+/**
+ * The `Response` value object represents the incoming response received from the AMI.
+ * It shares all properties of the [`Message`](#message) parent class.
+ */
 class Response extends Message
 {
     /** @internal */
