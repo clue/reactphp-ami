@@ -1,9 +1,9 @@
 # clue/reactphp-ami [![Build Status](https://travis-ci.org/clue/reactphp-ami.svg?branch=master)](https://travis-ci.org/clue/reactphp-ami)
 
 Streaming, event-driven access to the Asterisk Manager Interface (AMI),
-built on top of [ReactPHP](http://reactphp.org).
+built on top of [ReactPHP](https://reactphp.org).
 
-The [Asterisk PBX](http://asterisk.org/) is a popular open source telephony solution
+The [Asterisk PBX](https://www.asterisk.org/) is a popular open source telephony solution
 that offers a wide range of telephony features.
 The [Asterisk Manager Interface (AMI)](https://wiki.asterisk.org/wiki/display/AST/The+Asterisk+Manager+TCP+IP+API)
 allows you to control and monitor the PBX.
@@ -11,18 +11,18 @@ Among others, it can be used to originate a new call, execute Asterisk commands 
 monitor the status of subscribers, channels or queues.
 
 * **Async execution of Actions** -
-  Send any number of actions (commands) to the asterisk in parallel and
+  Send any number of actions (commands) to the Asterisk service in parallel and
   process their responses as soon as results come in.
-  The Promise-based design provides a *sane* interface to working with out of bound responses.
+  The Promise-based design provides a *sane* interface to working with out of order responses.
 * **Event-driven core** -
   Register your event handler callbacks to react to incoming events, such as an incoming call or
   a change in a subscriber state.
 * **Lightweight, SOLID design** -
-  Provides a thin abstraction that is [*just good enough*](http://en.wikipedia.org/wiki/Principle_of_good_enough)
+  Provides a thin abstraction that is [*just good enough*](https://en.wikipedia.org/wiki/Principle_of_good_enough)
   and does not get in your way.
   Future or custom actions and events require no changes to be supported.
 * **Good test coverage** -
-  Comes with an automated tests suite and is regularly tested against versions as old as Asterisk 1.8+
+  Comes with an automated tests suite and is regularly tested against versions as old as Asterisk 1.8+ and newer.
 
 **Table of contents**
 
@@ -517,10 +517,11 @@ This is a shortcut to get the value of the "Event" field.
 The recommended way to install this library is [through Composer](https://getcomposer.org).
 [New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
+This project follows [SemVer](https://semver.org/).
 This will install the latest supported version:
 
 ```bash
-$ composer require clue/ami-react:^0.4
+$ composer require clue/ami-react:^1.0
 ```
 
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
@@ -556,4 +557,7 @@ $ LOGIN=username:password@localhost php vendor/bin/phpunit
 
 ## License
 
-MIT
+This project is released under the permissive [MIT license](LICENSE).
+
+> Did you know that I offer custom development services and issuing invoices for
+  sponsorships of releases and for contributions? Contact me (@clue) for details.
