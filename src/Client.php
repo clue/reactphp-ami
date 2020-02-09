@@ -7,6 +7,7 @@ use Clue\React\Ami\Protocol\ErrorException;
 use Clue\React\Ami\Protocol\Event;
 use Clue\React\Ami\Protocol\Message;
 use Clue\React\Ami\Protocol\Parser;
+use Clue\React\Ami\Protocol\Response;
 use Clue\React\Ami\Protocol\UnexpectedMessageException;
 use Evenement\EventEmitter;
 use React\Promise\Deferred;
@@ -102,6 +103,8 @@ class Client extends EventEmitter
             $this->emit('event', array($message));
             return;
         }
+
+        assert($message instanceof Response);
         $id = $message->getActionId();
         if (!isset($this->pending[$id])) {
             $this->emit('error', array(new UnexpectedMessageException($message), $this));
@@ -187,7 +190,7 @@ class Client extends EventEmitter
      * ```
      *
      * @param string $name
-     * @param array $args
+     * @param array<string,string|string[]|null> $args
      * @return Action
      */
     public function createAction($name, array $args = array())
