@@ -133,7 +133,7 @@ class ActionSender
      */
     public function hangup($channel, $cause)
     {
-        return $this->request('Hangup', array('Channel' => $channel, 'Cause' => $cause));
+        return $this->request('Hangup', array('Channel' => $channel, 'Cause' => (string) $cause));
     }
 
     /**
@@ -201,7 +201,7 @@ class ActionSender
 
     /**
      * @param string $name
-     * @param array $args
+     * @param array<string,string|string[]|null> $args
      * @return \React\Promise\PromiseInterface<Response,\Exception>
      */
     private function request($name, array $args = array())

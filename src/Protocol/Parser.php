@@ -16,6 +16,10 @@ class Parser
     private $buffer = '';
     private $gotInitial = false;
 
+    /**
+     * @param string $chunk
+     * @return array<Event|Response>
+     */
     public function push($chunk)
     {
         $this->buffer .= $chunk;
