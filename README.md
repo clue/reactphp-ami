@@ -22,7 +22,8 @@ monitor the status of subscribers, channels or queues.
   and does not get in your way.
   Future or custom actions and events require no changes to be supported.
 * **Good test coverage** -
-  Comes with an automated tests suite and is regularly tested against versions as old as Asterisk 1.8+ and newer.
+  Comes with an automated tests suite and is regularly tested in the *real world*
+  against current Asterisk versions and versions as old as Asterisk 1.8.
 
 **Table of contents**
 
@@ -64,7 +65,7 @@ monitor the status of subscribers, channels or queues.
 ## Quickstart example
 
 Once [installed](#install), you can use the following code to access your local
-Asterisk Telephony instance and issue some simple commands via AMI:
+Asterisk instance and issue some simple commands via AMI:
 
 ```php
 $loop = React\EventLoop\Factory::create();
@@ -72,7 +73,7 @@ $factory = new Clue\React\Ami\Factory($loop);
 
 $factory->createClient('user:secret@localhost')->then(function (Clue\React\Ami\Client $client) {
     echo 'Client connected' . PHP_EOL;
-    
+
     $sender = new Clue\React\Ami\ActionSender($client);
     $sender->listCommands()->then(function (Clue\React\Ami\Protocol\Response $response) {
         echo 'Available commands:' . PHP_EOL;
@@ -308,9 +309,12 @@ Consider filing a PR to add new actions to the `ActionSender`.
 
 #### Promises
 
-Sending actions is async (non-blocking), so you can actually send multiple action requests in parallel.
-The AMI will respond to each action with a [`Response`](#response) object. The order is not guaranteed.
-Sending actions uses a [Promise](https://github.com/reactphp/promise)-based interface that makes it easy to react to when an action is completed
+Sending actions is async (non-blocking), so you can actually send multiple
+action requests in parallel.
+The AMI will respond to each action with a [`Response`](#response) object.
+The order is not guaranteed.
+Sending actions uses a [Promise](https://github.com/reactphp/promise)-based
+interface that makes it easy to react to when an action is completed
 (i.e. either successfully fulfilled or rejected with an error):
 
 ```php
@@ -340,7 +344,7 @@ object to contain a list of entries.
 As stated above, this library provides you a powerful, async API by default.
 
 If, however, you want to integrate this into your traditional, blocking environment,
-you should look into also using [clue/block-react](https://github.com/clue/php-block-react).
+you should look into also using [clue/reactphp-block](https://github.com/clue/reactphp-block).
 
 The resulting blocking code could look something like this:
 
@@ -366,7 +370,7 @@ function getSipPeers()
 }
 ```
 
-Refer to [clue/block-react](https://github.com/clue/php-block-react#readme) for more details.
+Refer to [clue/reactphp-block](https://github.com/clue/reactphp-block#readme) for more details.
 
 ### Message
 
