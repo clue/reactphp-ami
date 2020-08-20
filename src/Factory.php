@@ -116,7 +116,7 @@ class Factory
             $promise = $promise->then(function (Client $client) use ($parts) {
                 $sender = new ActionSender($client);
 
-                return $sender->login($parts['user'], $parts['pass'])->then(
+                return $sender->login(urldecode($parts['user']), urldecode($parts['pass']))->then(
                     function ($response) use ($client) {
                         return $client;
                     },
