@@ -185,6 +185,15 @@ class ActionSender
     }
 
     /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>collection with "Event: ExtensionStatus"
+     * @link https://wiki.asterisk.org/wiki/display/AST/Asterisk+14+ManagerAction_ExtensionStateList
+     */
+    public function extensionStates()
+    {
+        return $this->collectEvents('ExtensionStateList', 'ExtensionStateListComplete');
+    }
+
+    /**
      * @param mixed $value
      * @return ?string
      */
