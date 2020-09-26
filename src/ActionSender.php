@@ -194,6 +194,15 @@ class ActionSender
     }
 
     /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with "Event: QueueStatus"
+     * @link https://wiki.asterisk.org/wiki/display/AST/Asterisk+14+ManagerAction_QueueStatus
+     */
+    public function queueStatus(array $args = array())
+    {
+        return $this->collectEvents('QueueStatus', 'QueueStatusComplete', array($args));
+    }
+
+    /**
      * @param mixed $value
      * @return ?string
      */
