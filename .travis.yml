@@ -3,7 +3,7 @@ language: php
 # lock distro so new future defaults will not break the build
 dist: trusty
 
-matrix:
+jobs:
   include:
     - php: 5.3
       dist: precise
@@ -24,9 +24,10 @@ install:
   - sudo apt-get --no-install-recommends -qq install -y asterisk
   - sudo cp tests/username.conf /etc/asterisk/manager.d/username.conf
   - sudo /etc/init.d/asterisk reload
-  - composer install --no-interaction
+  - composer install
 
 script:
   - sudo /etc/init.d/asterisk status || sudo /etc/init.d/asterisk start
   - sudo /etc/init.d/asterisk status || sleep 2
-  - vendor/bin/phpunit --coverage-text
+  - if [[ "$TRAVIS_PHP_VERSION" > "7.2" ]]; then vendor/bin/phpunit --coverage-text; fi
+  - if [[ "$TRAVIS_PHP_VERSION" < "7.3" ]]; then vendor/bin/phpunit --coverage-text -c phpunit.xml.legacy; fi
