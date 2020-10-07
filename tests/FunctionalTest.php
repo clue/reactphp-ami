@@ -13,13 +13,19 @@ class FunctionalTest extends TestCase
     private static $address = false;
     private static $loop;
 
-    public static function setUpBeforeClass()
+    /**
+     * @beforeClass
+     */
+    public static function setUpLoopBeforeClass()
     {
         self::$address = getenv('LOGIN');
         self::$loop = \React\EventLoop\Factory::create();
     }
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setUpSkipTest()
     {
         if (self::$address === false) {
             $this->markTestSkipped('No ENV named LOGIN found. Please use "export LOGIN=\'user:pass@host\'.');
@@ -54,10 +60,10 @@ class FunctionalTest extends TestCase
     /**
      * @depends testConnection
      * @param Client $client
-     * @expectedException Exception
      */
     public function testInvalidCommandGetsRejected(Client $client)
     {
+        $this->setExpectedException('Exception');
         $this->waitFor($client->request($client->createAction('Invalid')));
     }
 
@@ -85,10 +91,10 @@ class FunctionalTest extends TestCase
     /**
      * @depends testActionSenderLogoffDisconnects
      * @param Client $client
-     * @expectedException Exception
      */
     public function testSendRejectedAfterClose(Client $client)
     {
+        $this->setExpectedException('Exception');
         $this->waitFor($client->request($client->createAction('Ping')));
     }
 

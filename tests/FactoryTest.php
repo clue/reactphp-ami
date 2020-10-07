@@ -11,7 +11,10 @@ class FactoryTest extends TestCase
     private $tcp;
     private $factory;
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setUpFactory()
     {
         $this->loop = $this->getMockBuilder('React\EventLoop\LoopInterface')->getMock();
         $this->tcp = $this->getMockBuilder('React\Socket\ConnectorInterface')->getMock();

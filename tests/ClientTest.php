@@ -45,6 +45,12 @@ class ClientTest extends TestCase
 
     private function createStreamMock()
     {
-        return $this->getMockBuilder('React\Socket\Connection')->disableOriginalConstructor()->setMethods(array('write', 'close'))->getMock();
+        if (method_exists('PHPUnit\Framework\MockObject\MockBuilder', 'onlyMethods')) {
+            // PHPUnit 9+
+            return $this->getMockBuilder('React\Socket\Connection')->disableOriginalConstructor()->onlyMethods(array('write', 'close'))->getMock();
+        } else {
+            // legacy PHPUnit 4 - PHPUnit 8
+            return $this->getMockBuilder('React\Socket\Connection')->disableOriginalConstructor()->setMethods(array('write', 'close'))->getMock();
+        }
     }
 }
