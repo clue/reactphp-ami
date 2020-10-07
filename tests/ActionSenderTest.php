@@ -53,7 +53,13 @@ class ActionSenderTest extends TestCase
     {
         $stream = $this->getMockBuilder('React\Socket\Connection')->disableOriginalConstructor()->getMock();
 
-        $client = $this->getMockBuilder('Clue\React\Ami\Client')->setMethods(array('createAction'))->setConstructorArgs(array($stream))->getMock();
+        if (method_exists('PHPUnit\Framework\MockObject\MockBuilder', 'onlyMethods')) {
+            // PHPUnit 9+
+            $client = $this->getMockBuilder('Clue\React\Ami\Client')->onlyMethods(array('createAction'))->setConstructorArgs(array($stream))->getMock();
+        } else {
+            // legacy PHPUnit 4 - PHPUnit 8
+            $client = $this->getMockBuilder('Clue\React\Ami\Client')->setMethods(array('createAction'))->setConstructorArgs(array($stream))->getMock();
+        }
 
         return $client;
     }

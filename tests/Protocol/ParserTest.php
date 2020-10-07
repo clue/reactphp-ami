@@ -132,14 +132,12 @@ class ParserTest extends TestCase
         $this->assertEquals('Some message--END COMMAND--', $first->getFieldValue('Message'));
     }
 
-    /**
-     * @expectedException UnexpectedValueException
-     */
     public function testParsingInvalidResponseFails()
     {
         $parser = new Parser();
         $this->assertEquals(array(), $parser->push("Asterisk Call Manager/1.3\r\n"));
 
+        $this->setExpectedException('UnexpectedValueException');
         $parser->push("invalid response\r\n\r\n");
     }
 
