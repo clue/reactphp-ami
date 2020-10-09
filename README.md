@@ -121,6 +121,7 @@ $factory = new Clue\React\Ami\Factory($loop, $connector);
 
 The `createClient(string $url): PromiseInterface<Client,Exception>` method can be used to
 create a new [`Client`](#client).
+
 It helps with establishing a plain TCP/IP or secure TLS connection to the AMI
 and optionally issuing an initial `login` action.
 
@@ -152,6 +153,18 @@ to pass a username and secret for your AMI login details like this:
 
 ```php
 $factory->createClient('user:secret@localhost');
+```
+
+Note that both the username and password must be URL-encoded (percent-encoded)
+if they contain special characters:
+
+```php
+$user = 'he:llo';
+$pass = 'p@ss';
+
+$promise = $factory->createClient(
+    rawurlencode($user) . ':' . rawurlencode($pass) . '@localhost'
+);
 ```
 
 The `Factory` defaults to establishing a plaintext TCP connection.
