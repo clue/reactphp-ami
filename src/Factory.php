@@ -37,7 +37,6 @@ use React\Socket\ConnectorInterface;
  */
 class Factory
 {
-    private $loop;
     private $connector;
 
     public function __construct(LoopInterface $loop, ConnectorInterface $connector = null)
@@ -46,12 +45,12 @@ class Factory
             $connector = new Connector($loop);
         }
 
-        $this->loop = $loop;
         $this->connector = $connector;
     }
 
     /**
      * Create a new [`Client`](#client).
+     *
      * It helps with establishing a plain TCP/IP or secure TLS connection to the AMI
      * and optionally issuing an initial `login` action.
      *
@@ -85,6 +84,18 @@ class Factory
      * $factory->createClient('user:secret@localhost');
      * ```
      *
+     * Note that both the username and password must be URL-encoded (percent-encoded)
+     * if they contain special characters:
+     *
+     * ```php
+     * $user = 'he:llo';
+     * $pass = 'p@ss';
+     *
+     * $promise = $factory->createClient(
+     *     rawurlencode($user) . ':' . rawurlencode($pass) . '@localhost'
+     * );
+     * ```
+     *
      * The `Factory` defaults to establishing a plaintext TCP connection.
      * If you want to create a secure TLS connection, you can use the `tls` scheme
      * (which defaults to port `5039`):
@@ -116,8 +127,8 @@ class Factory
             $promise = $promise->then(function (Client $client) use ($parts) {
                 $sender = new ActionSender($client);
 
-                return $sender->login($parts['user'], $parts['pass'])->then(
-                    function ($response) use ($client) {
+                return $sender->login(rawurldecode($parts['user']), rawurldecode($parts['pass']))->then(
+                    function () use ($client) {
                         return $client;
                     },
                     function ($error) use ($client) {
