@@ -7,7 +7,6 @@ use React\Promise\Promise;
 
 class FactoryTest extends TestCase
 {
-    private $loop;
     private $tcp;
     private $factory;
 
@@ -16,18 +15,22 @@ class FactoryTest extends TestCase
      */
     public function setUpFactory()
     {
-        $this->loop = $this->getMockBuilder('React\EventLoop\LoopInterface')->getMock();
+        $loop = $this->getMockBuilder('React\EventLoop\LoopInterface')->getMock();
         $this->tcp = $this->getMockBuilder('React\Socket\ConnectorInterface')->getMock();
 
-        $this->factory = new Factory($this->loop, $this->tcp);
+        $this->factory = new Factory($loop, $this->tcp);
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
-    public function testDefaultCtor()
+    public function testDefaultCtorCreatesConnectorAutomatically()
     {
-        $this->factory = new Factory($this->loop);
+        $loop = $this->getMockBuilder('React\EventLoop\LoopInterface')->getMock();
+        $this->factory = new Factory($loop);
+
+        $ref = new \ReflectionProperty($this->factory, 'connector');
+        $ref->setAccessible(true);
+        $connector = $ref->getValue($this->factory);
+
+        $this->assertInstanceOf('React\Socket\Connector', $connector);
     }
 
     public function testCreateClientUsesDefaultPortForTcpConnection()
@@ -95,6 +98,49 @@ class FactoryTest extends TestCase
 
         $this->assertNotNull($clientConnected);
         $clientConnected($client);
+    }
+
+    public function testCreateClientWithAuthenticationResolvesWhenAuthenticationSucceeds()
+    {
+        $action = $this->getMockBuilder('Clue\React\Ami\Protocol\Action')->getMock();
+        $client = $this->getMockBuilder('Clue\React\Ami\Client')->disableOriginalConstructor()->getMock();
+        $client->expects($this->once())->method('createAction')->willReturn($action);
+        $client->expects($this->once())->method('request')->with($action)->willReturn(\React\Promise\resolve('ignored'));
+
+        $promiseConnecting = $this->getMockBuilder('React\Promise\PromiseInterface')->getMock();
+        $promiseConnecting->expects($this->once())->method('then')->willReturn(\React\Promise\resolve($client));
+        $this->tcp->expects($this->once())->method('connect')->willReturn($promiseConnecting);
+
+        $promise = $this->factory->createClient('user%40host:pass+word%21@localhost');
+
+        $client = null;
+        $promise->then(function ($value) use (&$client) {
+            $client = $value;
+        });
+
+        $this->assertInstanceOf('Clue\React\Ami\Client', $client);
+    }
+
+    public function testCreateClientWithAuthenticationWillCloseClientAndRejectWhenLoginRequestRejects()
+    {
+        $error = new \RuntimeException();
+        $action = $this->getMockBuilder('Clue\React\Ami\Protocol\Action')->getMock();
+        $client = $this->getMockBuilder('Clue\React\Ami\Client')->disableOriginalConstructor()->getMock();
+        $client->expects($this->once())->method('createAction')->willReturn($action);
+        $client->expects($this->once())->method('request')->with($action)->willReturn(\React\Promise\reject($error));
+        $client->expects($this->once())->method('close');
+
+        $promiseConnecting = $this->getMockBuilder('React\Promise\PromiseInterface')->getMock();
+        $promiseConnecting->expects($this->once())->method('then')->willReturn(\React\Promise\resolve($client));
+        $this->tcp->expects($this->once())->method('connect')->willReturn($promiseConnecting);
+
+        $promise = $this->factory->createClient('user%40host:pass+word%21@localhost');
+
+        $exception = null;
+        $promise->then(null, function ($reason) use (&$exception) {
+            $exception = $reason;
+        });
+        $this->assertSame($error, $exception);
     }
 
     public function testCreateClientWithInvalidUrlWillRejectPromise()

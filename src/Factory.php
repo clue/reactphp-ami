@@ -37,7 +37,6 @@ use React\Socket\ConnectorInterface;
  */
 class Factory
 {
-    private $loop;
     private $connector;
 
     public function __construct(LoopInterface $loop, ConnectorInterface $connector = null)
@@ -46,7 +45,6 @@ class Factory
             $connector = new Connector($loop);
         }
 
-        $this->loop = $loop;
         $this->connector = $connector;
     }
 
@@ -130,7 +128,7 @@ class Factory
                 $sender = new ActionSender($client);
 
                 return $sender->login(rawurldecode($parts['user']), rawurldecode($parts['pass']))->then(
-                    function ($response) use ($client) {
+                    function () use ($client) {
                         return $client;
                     },
                     function ($error) use ($client) {
