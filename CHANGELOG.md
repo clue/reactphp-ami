@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.1.0 (2020-10-09)
+
+*   Feature: Support authentication with URL-encoded special characters.
+    (#66 by @clue)
+
+    ```php
+    $user = 'he:llo';
+    $pass = 'p@ss';
+    $promise = $factory->createClient(
+        rawurlencode($user) . ':' . rawurlencode($pass) . '@localhost'
+    );
+    ```
+
+*   Minor documentation improvements and add support / sponsorship info.
+    (#58 by @clue)
+
+*   Improve test suite and add `.gitattributes` to exclude dev files from exports.
+    Prepare PHP 8 support, update to PHPUnit 9 and simplify test matrix.
+    (#57 and #59 by @clue and #61 and #65 by @SimonFrings)
+
 ## 1.0.0 (2019-10-31)
 
 *   **First stable release, now following SemVer!**
