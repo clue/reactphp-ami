@@ -1,4 +1,6 @@
-# clue/reactphp-ami [![Build Status](https://travis-ci.org/clue/reactphp-ami.svg?branch=master)](https://travis-ci.org/clue/reactphp-ami)
+# clue/reactphp-ami
+
+[![CI status](https://github.com/clue/reactphp-ami/workflows/CI/badge.svg)](https://github.com/clue/reactphp-ami/actions)
 
 Streaming, event-driven access to the Asterisk Manager Interface (AMI),
 built on top of [ReactPHP](https://reactphp.org).
