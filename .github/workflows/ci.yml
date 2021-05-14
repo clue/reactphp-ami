@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  PHPUnit:
+    name: PHPUnit (PHP ${{ matrix.php }})
+    runs-on: ubuntu-20.04
+    env:
+      LOGIN: username:password@localhost
+    strategy:
+      matrix:
+        php:
+          - 8.0
+          - 7.4
+          - 7.3
+          - 7.2
+          - 7.1
+          - 7.0
+          - 5.6
+          - 5.5
+          - 5.4
+          - 5.3
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
+      - run: sudo apt-get -qq update || true # update package list and ignore temporary network errors
+      - run: sudo apt-get --no-install-recommends -qq install -y asterisk
+      - run: sudo cp tests/username.conf /etc/asterisk/manager.d/username.conf
+      - run: sudo /etc/init.d/asterisk reload
+      - run: composer install
+      - run: sudo /etc/init.d/asterisk status || sudo /etc/init.d/asterisk start
+      - run: sudo /etc/init.d/asterisk status || sleep 2
+      - run: vendor/bin/phpunit --coverage-text
+        if: ${{ matrix.php >= 7.3 }}
+      - run: vendor/bin/phpunit --coverage-text -c phpunit.xml.legacy
+        if: ${{ matrix.php < 7.3 }}
