@@ -7,12 +7,11 @@ use Clue\React\Ami\Protocol\Collection;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$loop = React\EventLoop\Factory::create();
-$factory = new Factory($loop);
+$factory = new Factory();
 
 $target = isset($argv[1]) ? $argv[1] : 'name:password@localhost';
 
-$factory->createClient($target)->then(function (Client $client) use ($loop) {
+$factory->createClient($target)->then(function (Client $client) {
     echo 'Successfully connected' . PHP_EOL;
 
     $collector = new ActionSender($client);
@@ -24,5 +23,3 @@ $factory->createClient($target)->then(function (Client $client) use ($loop) {
         echo 'found ' . count($peers) . ' peers' . PHP_EOL;
     });
 }, 'var_dump');
-
-$loop->run();

@@ -79,8 +79,7 @@ Once [installed](#install), you can use the following code to access your local
 Asterisk instance and issue some simple commands via AMI:
 
 ```php
-$loop = React\EventLoop\Factory::create();
-$factory = new Clue\React\Ami\Factory($loop);
+$factory = new Clue\React\Ami\Factory();
 
 $factory->createClient('user:secret@localhost')->then(function (Clue\React\Ami\Client $client) {
     echo 'Client connected' . PHP_EOL;
@@ -91,8 +90,6 @@ $factory->createClient('user:secret@localhost')->then(function (Clue\React\Ami\C
         var_dump($response);
     });
 });
-
-$loop->run();
 ```
 
 See also the [examples](examples).
@@ -102,19 +99,23 @@ See also the [examples](examples).
 ### Factory
 
 The `Factory` is responsible for creating your [`Client`](#client) instance.
-It also registers everything with the main [`EventLoop`](https://github.com/reactphp/event-loop#usage).
 
 ```php
-$loop = React\EventLoop\Factory::create();
-$factory = new Clue\React\Ami\Factory($loop);
+$factory = new Clue\React\Ami\Factory();
 ```
+
+This class takes an optional `LoopInterface|null $loop` parameter that can be used to
+pass the event loop instance to use for this object. You can use a `null` value
+here in order to use the [default loop](https://github.com/reactphp/event-loop#loop).
+This value SHOULD NOT be given unless you're sure you want to explicitly use a
+given event loop instance.
 
 If you need custom connector settings (DNS resolution, TLS parameters, timeouts,
 proxy servers etc.), you can explicitly pass a custom instance of the
 [`ConnectorInterface`](https://github.com/reactphp/socket#connectorinterface):
 
 ```php
-$connector = new React\Socket\Connector($loop, array(
+$connector = new React\Socket\Connector(null, array(
     'dns' => '127.0.0.1',
     'tcp' => array(
         'bindto' => '192.168.10.1:0'
@@ -125,7 +126,7 @@ $connector = new React\Socket\Connector($loop, array(
     )
 ));
 
-$factory = new Clue\React\Ami\Factory($loop, $connector);
+$factory = new Clue\React\Ami\Factory(null, $connector);
 ```
 
 #### createClient()
@@ -374,11 +375,11 @@ The resulting blocking code could look something like this:
 
 ```php
 use Clue\React\Block;
+use React\EventLoop\Loop;
 
 function getSipPeers()
 {
-    $loop = React\EventLoop\Factory::create();
-    $factory = new Clue\React\Ami\Factory($loop);
+    $factory = new Clue\React\Ami\Factory();
 
     $target = 'name:password@localhost';
     $promise = $factory->createClient($target)->then(function (Clue\React\Ami\Client $client) {
@@ -390,7 +391,7 @@ function getSipPeers()
         return $ret;
     });
 
-    return Block\await($promise, $loop, 5.0);
+    return Block\await($promise, Loop::get(), 5.0);
 }
 ```
 
