@@ -8,13 +8,12 @@ use Clue\React\Ami\Protocol\Event;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$loop = React\EventLoop\Factory::create();
-$factory = new Factory($loop);
+$factory = new Factory();
 
 $target = isset($argv[1]) ? $argv[1] : 'name:password@localhost';
 
 $factory->createClient($target)->then(
-    function (Client $client) use ($loop) {
+    function (Client $client) {
         echo 'Client connected ' . PHP_EOL;
 
         $sender = new ActionSender($client);
@@ -32,5 +31,3 @@ $factory->createClient($target)->then(
         echo 'Connection error: ' . $error;
     }
 );
-
-$loop->run();

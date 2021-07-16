@@ -9,19 +9,23 @@ use React\Socket\ConnectorInterface;
 
 /**
  * The `Factory` is responsible for creating your [`Client`](#client) instance.
- * It also registers everything with the main [`EventLoop`](https://github.com/reactphp/event-loop#usage).
  *
  * ```php
- * $loop = React\EventLoop\Factory::create();
- * $factory = new Clue\React\Ami\Factory($loop);
+ * $factory = new Clue\React\Ami\Factory();
  * ```
+ *
+ * This class takes an optional `LoopInterface|null $loop` parameter that can be used to
+ * pass the event loop instance to use for this object. You can use a `null` value
+ * here in order to use the [default loop](https://github.com/reactphp/event-loop#loop).
+ * This value SHOULD NOT be given unless you're sure you want to explicitly use a
+ * given event loop instance.
  *
  * If you need custom connector settings (DNS resolution, TLS parameters, timeouts,
  * proxy servers etc.), you can explicitly pass a custom instance of the
  * [`ConnectorInterface`](https://github.com/reactphp/socket#connectorinterface):
  *
  * ```php
- * $connector = new React\Socket\Connector($loop, array(
+ * $connector = new React\Socket\Connector(null, array(
  *     'dns' => '127.0.0.1',
  *     'tcp' => array(
  *         'bindto' => '192.168.10.1:0'
@@ -32,14 +36,14 @@ use React\Socket\ConnectorInterface;
  *     )
  * ));
  *
- * $factory = new Clue\React\Ami\Factory($loop, $connector);
+ * $factory = new Clue\React\Ami\Factory(null, $connector);
  * ```
  */
 class Factory
 {
     private $connector;
 
-    public function __construct(LoopInterface $loop, ConnectorInterface $connector = null)
+    public function __construct(LoopInterface $loop = null, ConnectorInterface $connector = null)
     {
         if ($connector === null) {
             $connector = new Connector($loop);

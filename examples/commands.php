@@ -4,15 +4,15 @@ use Clue\React\Ami\Factory;
 use Clue\React\Ami\Client;
 use Clue\React\Ami\ActionSender;
 use Clue\React\Ami\Protocol\Response;
+use React\EventLoop\Loop;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$loop = React\EventLoop\Factory::create();
-$factory = new Factory($loop);
+$factory = new Factory();
 
 $target = isset($argv[1]) ? $argv[1] : 'name:password@localhost';
 
-$factory->createClient($target)->then(function (Client $client) use ($loop) {
+$factory->createClient($target)->then(function (Client $client) {
     echo 'Client connected. Use STDIN to send CLI commands via asterisk AMI.' . PHP_EOL;
     $sender = new ActionSender($client);
 
@@ -22,13 +22,13 @@ $factory->createClient($target)->then(function (Client $client) use ($loop) {
         echo 'Commands: ' . implode(', ', array_keys($response->getFields())) . PHP_EOL;
     });
 
-    $client->on('close', function() use ($loop) {
+    $client->on('close', function() {
         echo 'Closed' . PHP_EOL;
 
-        $loop->removeReadStream(STDIN);
+        Loop::removeReadStream(STDIN);
     });
 
-    $loop->addReadStream(STDIN, function () use ($sender) {
+    Loop::addReadStream(STDIN, function () use ($sender) {
         $line = trim(fread(STDIN, 4096));
         echo '<' . $line . PHP_EOL;
 
@@ -42,5 +42,3 @@ $factory->createClient($target)->then(function (Client $client) use ($loop) {
         );
     });
 }, 'var_dump');
-
-$loop->run();

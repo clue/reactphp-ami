@@ -15,16 +15,14 @@ class FactoryTest extends TestCase
      */
     public function setUpFactory()
     {
-        $loop = $this->getMockBuilder('React\EventLoop\LoopInterface')->getMock();
         $this->tcp = $this->getMockBuilder('React\Socket\ConnectorInterface')->getMock();
 
-        $this->factory = new Factory($loop, $this->tcp);
+        $this->factory = new Factory(null, $this->tcp);
     }
 
     public function testDefaultCtorCreatesConnectorAutomatically()
     {
-        $loop = $this->getMockBuilder('React\EventLoop\LoopInterface')->getMock();
-        $this->factory = new Factory($loop);
+        $this->factory = new Factory();
 
         $ref = new \ReflectionProperty($this->factory, 'connector');
         $ref->setAccessible(true);
