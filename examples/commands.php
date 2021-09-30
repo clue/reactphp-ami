@@ -1,24 +1,20 @@
 <?php
 
-use Clue\React\Ami\Factory;
-use Clue\React\Ami\Client;
-use Clue\React\Ami\ActionSender;
-use Clue\React\Ami\Protocol\Response;
 use React\EventLoop\Loop;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$factory = new Factory();
+$factory = new Clue\React\Ami\Factory();
 
 $target = isset($argv[1]) ? $argv[1] : 'name:password@localhost';
 
-$factory->createClient($target)->then(function (Client $client) {
+$factory->createClient($target)->then(function (Clue\React\Ami\Client $client) {
     echo 'Client connected. Use STDIN to send CLI commands via asterisk AMI.' . PHP_EOL;
-    $sender = new ActionSender($client);
+    $sender = new Clue\React\Ami\ActionSender($client);
 
     $sender->events(false);
 
-    $sender->listCommands()->then(function (Response $response) {
+    $sender->listCommands()->then(function (Clue\React\Ami\Protocol\Response $response) {
         echo 'Commands: ' . implode(', ', array_keys($response->getFields())) . PHP_EOL;
     });
 
@@ -33,7 +29,7 @@ $factory->createClient($target)->then(function (Client $client) {
         echo '<' . $line . PHP_EOL;
 
         $sender->command($line)->then(
-            function (Response $response) {
+            function (Clue\React\Ami\Protocol\Response $response) {
                 echo $response->getCommandOutput() . PHP_EOL;
             },
             function (Exception $error) use ($line) {
@@ -41,4 +37,6 @@ $factory->createClient($target)->then(function (Client $client) {
             }
         );
     });
-}, 'var_dump');
+}, function (Exception $error) {
+    echo 'Connection error: ' . $error;
+});
