@@ -25,7 +25,7 @@ use React\Socket\ConnectorInterface;
  * [`ConnectorInterface`](https://github.com/reactphp/socket#connectorinterface):
  *
  * ```php
- * $connector = new React\Socket\Connector(null, array(
+ * $connector = new React\Socket\Connector(array(
  *     'dns' => '127.0.0.1',
  *     'tcp' => array(
  *         'bindto' => '192.168.10.1:0'
@@ -46,7 +46,7 @@ class Factory
     public function __construct(LoopInterface $loop = null, ConnectorInterface $connector = null)
     {
         if ($connector === null) {
-            $connector = new Connector($loop);
+            $connector = new Connector(array(), $loop);
         }
 
         $this->connector = $connector;
