@@ -82,6 +82,10 @@ Once [installed](#install), you can use the following code to access your local
 Asterisk instance and issue some simple commands via AMI:
 
 ```php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
 $factory = new Clue\React\Ami\Factory();
 
 $factory->createClient('user:secret@localhost')->then(function (Clue\React\Ami\Client $client) {
@@ -546,7 +550,7 @@ This is a shortcut to get the value of the "Event" field.
 
 ## Install
 
-The recommended way to install this library is [through Composer](https://getcomposer.org).
+The recommended way to install this library is [through Composer](https://getcomposer.org/).
 [New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
 This project follows [SemVer](https://semver.org/).
@@ -560,12 +564,12 @@ See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
 
 This project aims to run on any platform and thus does not require any PHP
 extensions and supports running on legacy PHP 5.3 through current PHP 8+.
-It's *highly recommended to use PHP 7+* for this project.
+It's *highly recommended to use the latest supported PHP version* for this project.
 
 ## Tests
 
 To run the test suite, you first need to clone this repo and then install all
-dependencies [through Composer](https://getcomposer.org):
+dependencies [through Composer](https://getcomposer.org/):
 
 ```bash
 $ composer install
@@ -574,7 +578,7 @@ $ composer install
 To run the test suite, go to the project root and run:
 
 ```bash
-$ php vendor/bin/phpunit
+$ vendor/bin/phpunit
 ```
 
 The test suite contains both unit tests and functional integration tests.
