@@ -1,6 +1,6 @@
 # clue/reactphp-ami
 
-[![CI status](https://github.com/clue/reactphp-ami/workflows/CI/badge.svg)](https://github.com/clue/reactphp-ami/actions)
+[![CI status](https://github.com/clue/reactphp-ami/actions/workflows/ci.yml/badge.svg)](https://github.com/clue/reactphp-ami/actions)
 [![installs on Packagist](https://img.shields.io/packagist/dt/clue/ami-react?color=blue&label=installs%20on%20Packagist)](https://packagist.org/packages/clue/ami-react)
 
 Streaming, event-driven access to the Asterisk Manager Interface (AMI),
