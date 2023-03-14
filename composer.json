@@ -18,8 +18,8 @@
         "react/socket": "^1.14"
     },
     "require-dev": {
-        "clue/block-react": "^1.5",
-        "phpunit/phpunit": "^9.6 || ^5.7 || ^4.8.36"
+        "phpunit/phpunit": "^9.6 || ^5.7 || ^4.8.36",
+        "react/async": "^4.2 || ^3.2 || ^2.2"
     },
     "autoload": {
         "psr-4": {

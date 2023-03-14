@@ -2,11 +2,11 @@
 
 namespace Clue\Tests\React\Ami;
 
-use Clue\React\Ami\Factory;
-use Clue\React\Ami\Client;
 use Clue\React\Ami\ActionSender;
-use Clue\React\Block;
-use React\Promise\PromiseInterface;
+use Clue\React\Ami\Client;
+use Clue\React\Ami\Factory;
+use Clue\React\Ami\Protocol\Response;
+use React\EventLoop\Loop;
 
 class FunctionalTest extends TestCase
 {
@@ -19,7 +19,6 @@ class FunctionalTest extends TestCase
     public static function setUpLoopBeforeClass()
     {
         self::$address = getenv('LOGIN');
-        self::$loop = \React\EventLoop\Factory::create();
     }
 
     /**
@@ -34,10 +33,16 @@ class FunctionalTest extends TestCase
 
     public function testConnection()
     {
-        $factory = new Factory(self::$loop);
+        $factory = new Factory();
 
-        $client = $this->waitFor($factory->createClient(self::$address));
-        /* @var $client Client */
+        $client = \React\Async\await($factory->createClient(self::$address));
+        assert($client instanceof Client);
+
+        // let loop tick for reactphp/async v4 to clean up any remaining references
+        // @link https://github.com/reactphp/async/pull/65 reported upstream // TODO remove me once merged
+        if (function_exists('React\Async\async')) {
+            \React\Async\delay(0.0);
+        }
 
         $this->assertFalse($client->isBusy());
 
@@ -52,7 +57,7 @@ class FunctionalTest extends TestCase
     {
         $sender = new ActionSender($client);
 
-        $pong = $this->waitFor($sender->ping());
+        $pong = \React\Async\await($sender->ping());
 
         $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $pong);
     }
@@ -64,7 +69,7 @@ class FunctionalTest extends TestCase
     public function testInvalidCommandGetsRejected(Client $client)
     {
         $this->setExpectedException('Exception');
-        $this->waitFor($client->request($client->createAction('Invalid')));
+        \React\Async\await($client->request($client->createAction('Invalid')));
     }
 
     /**
@@ -75,15 +80,20 @@ class FunctionalTest extends TestCase
     {
         $sender = new ActionSender($client);
 
-        $ret = $this->waitFor($sender->logoff());
+        $ret = \React\Async\await($sender->logoff());
+        assert($ret instanceof Response);
 
-        $this->assertInstanceOf('Clue\React\Ami\Protocol\Response', $ret);
+        // let loop tick for reactphp/async v4 to clean up any remaining references
+        // @link https://github.com/reactphp/async/pull/65 reported upstream // TODO remove me once merged
+        if (function_exists('React\Async\async')) {
+            \React\Async\delay(0.0);
+        }
 
         $this->assertFalse($client->isBusy());
 
         //$client->on('close', $this->expectCallableOnce());
 
-        self::$loop->run();
+        Loop::run();
 
         return $client;
     }
@@ -95,11 +105,6 @@ class FunctionalTest extends TestCase
     public function testSendRejectedAfterClose(Client $client)
     {
         $this->setExpectedException('Exception');
-        $this->waitFor($client->request($client->createAction('Ping')));
-    }
-
-    private function waitFor(PromiseInterface $promise)
-    {
-        return Block\await($promise, self::$loop, 5.0);
+        \React\Async\await($client->request($client->createAction('Ping')));
     }
 }
