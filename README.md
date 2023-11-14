@@ -150,7 +150,7 @@ $factory->createClient($url)->then(
         // client connected (and authenticated)
     },
     function (Exception $e) {
-        // an error occured while trying to connect or authorize client
+        // an error occurred while trying to connect or authorize client
     }
 );
 ```
@@ -355,7 +355,7 @@ $sender->ping()->then(
         // response received for ping action
     },
     function (Exception $e) {
-        // an error occured while executing the action
+        // an error occurred while executing the action
         
         if ($e instanceof Clue\React\Ami\Protocol\ErrorException) {
             // we received a valid error response (such as authorization error)
