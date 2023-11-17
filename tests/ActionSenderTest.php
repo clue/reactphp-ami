@@ -23,7 +23,7 @@ class ActionSenderTest extends TestCase
 
         $promise = $collector->sipPeers();
 
-        // save resolved result for comparisions
+        // save resolved result for comparisons
         $resolved = null;
         $promise->then(function($result) use (&$resolved) {
             $resolved = $result;

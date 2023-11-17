@@ -64,7 +64,7 @@ class Factory
      *         // client connected (and authenticated)
      *     },
      *     function (Exception $e) {
-     *         // an error occured while trying to connect or authorize client
+     *         // an error occurred while trying to connect or authorize client
      *     }
      * );
      * ```
