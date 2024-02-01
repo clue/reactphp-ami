@@ -19,12 +19,16 @@
     },
     "require-dev": {
         "clue/block-react": "^1.2",
-        "phpunit/phpunit": "^9.3 || ^5.7 || ^4.8.35"
+        "phpunit/phpunit": "^9.6 || ^5.7 || ^4.8.36"
     },
     "autoload": {
-        "psr-4": { "Clue\\React\\Ami\\": "src/" }
+        "psr-4": {
+            "Clue\\React\\Ami\\": "src/"
+        }
     },
     "autoload-dev": {
-        "psr-4": { "Clue\\Tests\\React\\Ami\\": "tests/" }
+        "psr-4": {
+            "Clue\\Tests\\React\\Ami\\": "tests/"
+        }
     }
 }

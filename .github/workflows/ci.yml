@@ -7,7 +7,7 @@ on:
 jobs:
   PHPUnit:
     name: PHPUnit (PHP ${{ matrix.php }})
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       LOGIN: username:password@localhost
     strategy:
@@ -25,12 +25,13 @@ jobs:
           - 5.4
           - 5.3
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           coverage: xdebug
-      - run: sudo apt-get -qq update || true # update package list and ignore temporary network errors
+          ini-file: development
+      - run: sudo apt-get -qq update || true && sudo apt-get install -f # update package list and ignore temporary network errors
       - run: sudo apt-get --no-install-recommends -qq install -y asterisk
       - run: sudo cp tests/username.conf /etc/asterisk/manager.d/username.conf
       - run: sudo /etc/init.d/asterisk reload
