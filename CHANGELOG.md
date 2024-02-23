@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.2.0 (2024-02-23)
+
+*   Feature: Forward compatibility with Promise v3.
+    (#80 by @SimonFrings)
+
+*   Feature: Simplify usage by supporting new [default loop](https://reactphp.org/event-loop/#loop) and new Socket API.
+    (#70 by @clue and #71 by @SimonFrings)
+
+    ```php
+    // old (still supported)
+    $factory = new Clue\React\Ami\Factory($loop);
+
+    // new (using default loop)
+    $factory = new Clue\React\Ami\Factory();
+    ```
+
+*   Feature: Full PHP 8.3 compatibility.
+    (#67, #73 and #79 by @SimonFrings)
+
+*   Minor documentation improvements.
+    (#69 by @PaulRotmann and #77 by @yadaiio)
+
+*   Improve test suite and use GitHub actions for continuous integration (CI).
+    (#67 and #78 by @SimonFrings)
+
 ## 1.1.0 (2020-10-09)
 
 *   Feature: Support authentication with URL-encoded special characters.
