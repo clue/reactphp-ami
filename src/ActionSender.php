@@ -17,7 +17,7 @@ use React\Promise\Deferred;
  */
 class ActionSender
 {
-    private $client;
+    protected $client;
 
     public function __construct(Client $client)
     {
@@ -86,9 +86,11 @@ class ActionSender
     {
         if ($eventMask === false) {
             $eventMask = 'off';
-        } elseif ($eventMask === true) {
+        }
+        elseif ($eventMask === true) {
             $eventMask = 'on';
-        } else {
+        }
+        else {
             $eventMask = implode(',', $eventMask);
         }
 
@@ -188,7 +190,7 @@ class ActionSender
      * @param mixed $value
      * @return ?string
      */
-    private function boolParam($value)
+    protected function boolParam($value)
     {
         if ($value === true) {
             return 'on';
@@ -204,7 +206,7 @@ class ActionSender
      * @param array<string,string|string[]|null> $args
      * @return \React\Promise\PromiseInterface<Response,\Exception>
      */
-    private function request($name, array $args = array())
+    protected function request($name, array $args = array())
     {
         return $this->client->request($this->client->createAction($name, $args));
     }
@@ -214,7 +216,7 @@ class ActionSender
      * @param string $expectedEndEvent
      * @return \React\Promise\PromiseInterface<Collection,\Exception>
      */
-    private function collectEvents($command, $expectedEndEvent)
+    protected function collectEvents($command, $expectedEndEvent)
     {
         $req = $this->client->createAction($command);
         $ret = $this->client->request($req);
@@ -226,7 +228,7 @@ class ActionSender
         $collected = array();
         $collector = function (Event $event) use ($id, &$collected, $deferred, $expectedEndEvent) {
             if ($event->getActionId() === $id) {
-                $collected []= $event;
+                $collected[] = $event;
 
                 if ($event->getName() === $expectedEndEvent) {
                     $deferred->resolve($collected);
@@ -253,4 +255,308 @@ class ActionSender
             });
         });
     }
+
+    /**
+     * Collect list-style events for actions that use the standard EventList lifecycle.
+     *
+     * Resolves when an event with field "EventList: Complete" is received for the same ActionID.
+     *
+     * @param string $command
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     */
+    protected function collectEventsAuto($command)
+    {
+        $req = $this->client->createAction($command);
+        $ret = $this->client->request($req);
+        $id = $req->getActionId();
+
+        $deferred = new Deferred();
+
+        $collected = array();
+        $collector = function (Event $event) use ($id, &$collected, $deferred) {
+            if ($event->getActionId() === $id) {
+                $collected[] = $event;
+
+                if ($event->getFieldValue('EventList') === 'Complete') {
+                    $deferred->resolve($collected);
+                }
+            }
+        };
+        $this->client->on('event', $collector);
+
+        $client = $this->client;
+        $unregister = function () use ($client, $collector) {
+            $client->removeListener('event', $collector);
+        };
+        $ret->then(null, $unregister);
+        $deferred->promise()->then($unregister);
+
+        return $ret->then(function (Response $response) use ($deferred) {
+            return $deferred->promise()->then(function ($collected) use ($response) {
+                $last = array_pop($collected);
+                return new Collection($response, $collected, $last);
+            });
+        });
+    }
+
+    /**
+     * Same as collectEventsAuto() but allows passing arguments to the action and
+     * ensures a single request is created so ActionID matches collected events.
+     *
+     * @param string $command
+     * @param array<string,string|string[]|null> $args
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     */
+    protected function collectEventsAutoWithArgs($command, array $args = array())
+    {
+        $req = $this->client->createAction($command, $args);
+        $ret = $this->client->request($req);
+        $id = $req->getActionId();
+
+        $deferred = new Deferred();
+
+        $collected = array();
+        $collector = function (Event $event) use ($id, &$collected, $deferred) {
+            if ($event->getActionId() === $id) {
+                $collected[] = $event;
+
+                if ($event->getFieldValue('EventList') === 'Complete') {
+                    $deferred->resolve($collected);
+                }
+            }
+        };
+        $this->client->on('event', $collector);
+
+        $client = $this->client;
+        $unregister = function () use ($client, $collector) {
+            $client->removeListener('event', $collector);
+        };
+        $ret->then(null, $unregister);
+        $deferred->promise()->then($unregister);
+
+        return $ret->then(function (Response $response) use ($deferred) {
+            return $deferred->promise()->then(function ($collected) use ($response) {
+                $last = array_pop($collected);
+                return new Collection($response, $collected, $last);
+            });
+        });
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with "Event: Status"
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/Status/
+     */
+    public function status()
+    {
+        return $this->collectEventsAuto('Status');
+    }
+
+    /**
+     * @param ?string $queue
+     * @param ?string $member
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with queue status events
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/QueueStatus/
+     */
+    public function queueStatus($queue = null, $member = null)
+    {
+        $args = array('Queue' => $queue, 'Member' => $member);
+        return $this->collectEventsAutoWithArgs('QueueStatus', $args);
+    }
+
+    /**
+     * @param ?string $queue
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with queue summaries
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/QueueSummary/
+     */
+    public function queueSummary($queue = null)
+    {
+        $args = array('Queue' => $queue);
+        return $this->collectEventsAutoWithArgs('QueueSummary', $args);
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with parked calls
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/ParkedCalls/
+     */
+    public function parkedCalls()
+    {
+        return $this->collectEventsAuto('ParkedCalls');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with parking lots
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/Parkinglots/
+     */
+    public function parkinglots()
+    {
+        return $this->collectEventsAuto('Parkinglots');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with bridges
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/BridgeList/
+     */
+    public function bridgeList()
+    {
+        return $this->collectEventsAuto('BridgeList');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with bridge technologies
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/BridgeTechnologyList/
+     */
+    public function bridgeTechnologyList()
+    {
+        return $this->collectEventsAuto('BridgeTechnologyList');
+    }
+
+    /**
+     * @param string $conference
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with ConfBridge participants
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/ConfbridgeList/
+     */
+    public function confbridgeList($conference)
+    {
+        return $this->collectEventsAutoWithArgs('ConfbridgeList', array('Conference' => $conference));
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with ConfBridge rooms
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/ConfbridgeListRooms/
+     */
+    public function confbridgeListRooms()
+    {
+        return $this->collectEventsAuto('ConfbridgeListRooms');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/DeviceStateList/
+     */
+    public function deviceStateList()
+    {
+        return $this->collectEventsAuto('DeviceStateList');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/ExtensionStateList/
+     */
+    public function extensionStateList()
+    {
+        return $this->collectEventsAuto('ExtensionStateList');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/SIPshowregistry/
+     */
+    public function sipShowRegistry()
+    {
+        return $this->collectEventsAuto('SIPshowregistry');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/IAXpeerlist/
+     */
+    public function iaxPeerlist()
+    {
+        return $this->collectEventsAuto('IAXpeerlist');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with PJSIP endpoints
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/PJSIPShowEndpoints/
+     */
+    public function pjsipShowEndpoints()
+    {
+        return $this->collectEventsAuto('PJSIPShowEndpoints');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with PJSIP AORs
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/PJSIPShowAors/
+     */
+    public function pjsipShowAors()
+    {
+        return $this->collectEventsAuto('PJSIPShowAors');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception> collection with PJSIP contacts
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/PJSIPShowContacts/
+     */
+    public function pjsipShowContacts()
+    {
+        return $this->collectEventsAuto('PJSIPShowContacts');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/PJSIPShowRegistrationsInbound/
+     */
+    public function pjsipShowRegistrationsInbound()
+    {
+        return $this->collectEventsAuto('PJSIPShowRegistrationsInbound');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/PJSIPShowRegistrationsOutbound/
+     */
+    public function pjsipShowRegistrationsOutbound()
+    {
+        return $this->collectEventsAuto('PJSIPShowRegistrationsOutbound');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/PJSIPShowResourceLists/
+     */
+    public function pjsipShowResourceLists()
+    {
+        return $this->collectEventsAuto('PJSIPShowResourceLists');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/PJSIPShowSubscriptionsInbound/
+     */
+    public function pjsipShowSubscriptionsInbound()
+    {
+        return $this->collectEventsAuto('PJSIPShowSubscriptionsInbound');
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/PJSIPShowSubscriptionsOutbound/
+     */
+    public function pjsipShowSubscriptionsOutbound()
+    {
+        return $this->collectEventsAuto('PJSIPShowSubscriptionsOutbound');
+    }
+
+    /**
+     * @param ?string $context
+     * @param ?string $extension
+     * @param ?int $priority
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/ShowDialPlan/
+     */
+    public function showDialPlan($context = null, $extension = null, $priority = null)
+    {
+        $args = array('Context' => $context, 'Extension' => $extension, 'Priority' => $priority);
+        return $this->collectEventsAutoWithArgs('ShowDialPlan', $args);
+    }
+
+    /**
+     * @return \React\Promise\PromiseInterface<Collection,\Exception>
+     * @link https://docs.asterisk.org/Asterisk_18_Documentation/API_Documentation/AMI_Actions/VoicemailUsersList/
+     */
+    public function voicemailUsersList()
+    {
+        return $this->collectEventsAuto('VoicemailUsersList');
+    }
+
 }
