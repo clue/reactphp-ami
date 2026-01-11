@@ -33,8 +33,16 @@ class Client extends EventEmitter
 
     private $actionId = 0;
 
-    public function __construct(ConnectionInterface $stream, Parser $parser = null)
+    /**
+     * @param ConnectionInterface $stream
+     * @param ?Parser $parser
+     */
+    public function __construct(ConnectionInterface $stream, $parser = null)
     {
+        if ($parser !== null && !$parser instanceof Parser) { // manual type check to support legacy PHP < 7.1
+            throw new \InvalidArgumentException('Argument #2 ($parser) expected null|Clue\React\Ami\Protocol\Parser');
+        }
+
         if ($parser === null) {
             $parser = new Parser();
         }

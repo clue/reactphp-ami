@@ -43,6 +43,12 @@ class ClientTest extends TestCase
         $client->handleMessage(new Response(array('ActionID' => 1)));
     }
 
+    public function testCtorThrowsForInvalidParser()
+    {
+        $this->setExpectedException('InvalidArgumentException', 'Argument #2 ($parser) expected null|Clue\React\Ami\Protocol\Parser');
+        new Client($this->createStreamMock(), 'parser');
+    }
+
     private function createStreamMock()
     {
         if (method_exists('PHPUnit\Framework\MockObject\MockBuilder', 'onlyMethods')) {
