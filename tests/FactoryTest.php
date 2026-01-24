@@ -25,7 +25,9 @@ class FactoryTest extends TestCase
         $this->factory = new Factory();
 
         $ref = new \ReflectionProperty($this->factory, 'connector');
-        $ref->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $ref->setAccessible(true);
+        }
         $connector = $ref->getValue($this->factory);
 
         $this->assertInstanceOf('React\Socket\Connector', $connector);
