@@ -31,6 +31,18 @@ class FactoryTest extends TestCase
         $this->assertInstanceOf('React\Socket\Connector', $connector);
     }
 
+    public function testCtorThrowsForInvalidLoop()
+    {
+        $this->setExpectedException('InvalidArgumentException', 'Argument #1 ($loop) expected null|React\EventLoop\LoopInterface');
+        new Factory('loop');
+    }
+
+    public function testCtorThrowsForInvalidConnector()
+    {
+        $this->setExpectedException('InvalidArgumentException', 'Argument #2 ($connector) expected null|React\Socket\ConnectorInterface');
+        new Factory(null, 'connector');
+    }
+
     public function testCreateClientUsesDefaultPortForTcpConnection()
     {
         $promise = new Promise(function () { });
