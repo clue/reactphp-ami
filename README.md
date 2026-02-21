@@ -331,6 +331,35 @@ $sender->agents();
 // many more…
 ```
 
+The following convenience methods return a `Collection` of entry events plus a trailing completion event:
+
+- `coreShowChannels()`
+- `sipPeers()`
+- `agents()`
+- `status()`
+- `queueStatus(?string $queue = null, ?string $member = null)`
+- `queueSummary(?string $queue = null)`
+- `parkedCalls()`
+- `parkinglots()`
+- `bridgeList()`
+- `bridgeTechnologyList()`
+- `confbridgeList(string $conference)`
+- `confbridgeListRooms()`
+- `deviceStateList()`
+- `extensionStateList()`
+- `sipShowRegistry()`
+- `iaxPeerlist()`
+- `pjsipShowEndpoints()`
+- `pjsipShowAors()`
+- `pjsipShowContacts()`
+- `pjsipShowRegistrationsInbound()`
+- `pjsipShowRegistrationsOutbound()`
+- `pjsipShowResourceLists()`
+- `pjsipShowSubscriptionsInbound()`
+- `pjsipShowSubscriptionsOutbound()`
+- `showDialPlan(?string $context = null, ?string $extension = null, ?int $priority = null)`
+- `voicemailUsersList()`
+
 Listing all available actions is out of scope here, please refer to the [class outline](src/ActionSender.php).
 
 Note that using the `ActionSender` is not strictly necessary, but is the recommended way to execute common actions.
