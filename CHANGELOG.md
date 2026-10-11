@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0 (2026-10-11)
+
+*   Feature: Improve PHP 8.5+ and PHP 8.4+ support and update test environment.
+    (#84 and #85 by @clue)
+
+*   Improve test suite, use reactphp/async instead of clue/reactphp-block and support legacy PHP 7.2 with PHPUnit 8.5.
+    (#83 and #86 by @clue)
+
 ## 1.2.0 (2024-02-23)
 
 *   Feature: Forward compatibility with Promise v3.
